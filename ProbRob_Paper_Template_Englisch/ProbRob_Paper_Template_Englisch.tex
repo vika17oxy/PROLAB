@@ -173,7 +173,9 @@ a low-variance (systematic) resampler; the reported state is the weighted mean
 
 An IMU-simulator ROS\,2 node drives the spline at 50\,Hz and publishes the exact
 pose as ground truth.
-Each filter logs its estimate and covariance to CSV for off-line analysis.
+All three filter poses, their covariance ellipses, the particle cloud and the
+landmark are visualised live in RViz\,2; each filter additionally logs its
+estimate and covariance to CSV for off-line analysis.
 The primary metric is position RMSE,
 $\text{RMSE} = \sqrt{\tfrac{1}{N}\sum_k (e_{x,k}^2 + e_{y,k}^2)}$,
 complemented by heading RMSE and per-step runtime.
@@ -267,16 +269,16 @@ The centre panel adds the growing covariance circles, whose radius expands with
 travelled distance.
 The right panel shows the EKF output: with periodic landmark updates the
 estimate snaps back onto the true track and the covariance stays bounded.
-The odometry ends $0.89$\,m from the true end, whereas the landmark-corrected
-EKF ends only $0.07$\,m away.
+The odometry ends $0.90$\,m from the true end, whereas the landmark-corrected
+EKF ends only $0.23$\,m away.
 
 \begin{figure*}[!t]
   \centering
   \includegraphics[width=0.95\textwidth]{images/ekf_localization.png}
   \caption{EKF localization on the S-slalom. Left: odometry drift without
            corrections. Centre: growing uncertainty (dead-reckoning only).
-           Right: EKF estimate with landmark-based correction; two known
-           landmarks (stars) keep the estimate on the true path.}
+           Right: EKF estimate with landmark-based correction; the known
+           landmark (star) keeps the estimate on the true path.}
   \label{fig:ekfloc}
 \end{figure*}
 

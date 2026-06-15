@@ -22,7 +22,7 @@ from matplotlib.patches import Ellipse
 # ── Current route (must match imu_simulator.py waypoint defaults) ─────────────
 WPX = [-0.3, 0.94, 2.02, 3.10, 4.2]
 WPY = [-0.5, 1.05, -0.01, 1.05, 1.3]
-LANDMARKS = [(1.0, 2.6), (3.4, 2.6)]    # two known landmarks, off the path
+LANDMARKS = [(1.8, 3.0)]    # single known landmark, off the path (matches the rest of the study)
 V, DT = 0.12, 0.02
 GYRO_BIAS = 0.007            # systematic heading drift (odometry error source)
 GYRO_NOISE = 0.004
