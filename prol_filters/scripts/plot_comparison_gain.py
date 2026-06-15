@@ -53,17 +53,23 @@ def t0(d):
 
 
 def plot_filter_comparison(filt, out):
-    fig, (axt, axe) = plt.subplots(1, 2, figsize=(14, 5.6))
+    fig, (axt, axe) = plt.subplots(1, 2, figsize=(14, 5.4),
+                                   gridspec_kw={"width_ratios": [1.25, 1]})
     gt = next(d for d in filt.values() if d is not None)
-    axt.plot(gt["gt_x"], gt["gt_y"], "-", color=C["GT"], lw=2.4,
-             label="Ground Truth", zorder=5)
+    zmap = {"PF": 6, "EKF": 4, "KF": 3}
     for n, d in filt.items():
         if d is None:
             continue
-        axt.plot(d["x"], d["y"], "--", color=C[n], lw=1.5, alpha=0.9,
-                 label=f"{n} estimate")
+        axt.plot(d["x"], d["y"], "-", color=C[n], lw=1.0, alpha=0.55,
+                 label=f"{n} estimate", zorder=zmap.get(n, 3))
+    axt.plot(gt["gt_x"], gt["gt_y"], "-", color=C["GT"], lw=2.6,
+             label="Ground Truth", zorder=7)
+    axt.plot(gt["gt_x"][0], gt["gt_y"][0], "o", color="green", ms=8,
+             label="Start", zorder=8)
+    axt.plot(gt["gt_x"][-1], gt["gt_y"][-1], "o", color="orange", ms=8,
+             label="True End", zorder=8)
     axt.set_aspect("equal"); axt.set_xlabel("x [m]"); axt.set_ylabel("y [m]")
-    axt.set_title("Trajectory: ground truth vs filters"); legend_out(axt, fontsize=9)
+    axt.set_title("Trajectory: ground truth vs filters"); legend_out(axt, fontsize=8)
 
     for n, d in filt.items():
         if d is None:
