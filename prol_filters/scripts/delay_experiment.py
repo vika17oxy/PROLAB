@@ -27,10 +27,10 @@ WPX = [-0.3, 0.94, 2.02, 3.10, 4.2]
 WPY = [-0.5, 1.05, -0.01, 1.05, 1.3]
 LANDMARK = (1.8, 3.0)
 LM_RADIUS = 6.0
-V, DT = 0.4, 0.02
-GYRO_NOISE = 0.008
-Q_XY, Q_TH = 0.001, 0.0005
-R_R, R_B = 0.005, 0.005
+V, DT = 0.4, 0.02       # v=0.4 makes the processing-lag visible (lag = v*delay)
+GYRO_NOISE = 0.012      # = node gyro_noise_std
+Q_XY, Q_TH = 0.001, 0.0005    # = node q_xy, q_theta
+R_R, R_B = 0.005, 0.01  # = node r_landmark, r_bearing
 SIGMA_V, SIGMA_W, NP = 0.03, 0.015, 500
 EXPERIMENTS = [("01_baseline", 0), ("08_delay_100ms", 100), ("09_delay_500ms", 500)]
 C = {"KF": "tab:blue", "EKF": "tab:green", "PF": "tab:red"}  # Elias scheme

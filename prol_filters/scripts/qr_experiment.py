@@ -33,6 +33,11 @@ WPY = [-0.5, 1.05, -0.01, 1.05, 1.3]
 LANDMARK = (1.8, 3.0)
 LM_RADIUS = 6.0
 V, DT = 0.4, 0.02
+# NOTE: GYRO_BIAS (model error) and R_TRUE are deliberately larger than the node
+# defaults so the Q/R sweeps have a non-trivial interior optimum; without model
+# error a smaller Q/R would always win and the trade-off would not appear.
+# Q_DEFAULT matches the node (q_xy=0.001, q_theta=0.0005); the swept variable is
+# the one under test in each panel.
 GYRO_BIAS = 0.05         # injected motion-model error (rad/s) — large enough to need the sensor
 GYRO_NOISE = 0.006
 R_TRUE = 0.02            # actual landmark range/bearing noise variance (sensor really is noisy)

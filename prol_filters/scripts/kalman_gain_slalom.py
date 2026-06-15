@@ -21,7 +21,7 @@ WPX = [-0.3, 0.94, 2.02, 3.10, 4.2]
 WPY = [-0.5, 1.05, -0.01, 1.05, 1.3]
 LM = (1.8, 3.0); LM_R = 12.0         # off-path, continuously visible -> smooth gain
 V, DT = 0.3, 0.02
-GYRO_NOISE = 0.01
+GYRO_NOISE = 0.012      # = node gyro_noise_std
 R_R, R_B = 0.005, 0.01
 Q_XY, Q_TH = 0.001, 0.0005
 C = {"KF": "tab:blue", "EKF": "tab:green"}
@@ -88,7 +88,8 @@ def run(jac, gt, delay_steps):
         if k >= max(1, delay_steps):
             dx = lx-gx; dy = ly-gy; r = math.hypot(dx, dy)
             H = np.array([[-dx/r, -dy/r, 0.0], [dy/r/r, -dx/r/r, -1.0]])
-            S = H@P@H.T + R; K = P@H.T@np.linalg.inv(S); P = (np.eye(3)-K@H)@P
+            S = H@P@H.T + R; K = P@H.T@np.linalg.inv(S)
+            IKH = np.eye(3)-K@H; P = IKH@P@IKH.T + K@R@K.T   # Joseph form (matches C++)
             Kc[k] = K; upd[k] = True
     return Kc, upd
 

@@ -25,10 +25,10 @@ plt.rcParams.update({
 WPX = [-0.3, 0.94, 2.02, 3.10, 4.2]
 WPY = [-0.5, 1.05, -0.01, 1.05, 1.3]
 LM = (1.8, 3.0); LM_R = 6.0
-V, DT = 0.4, 0.02
-GYRO_NOISE = 0.008
-R_R, R_B = 0.005, 0.01
-Q_XY, Q_TH = 0.001, 0.0005
+V, DT = 0.4, 0.02       # v=0.4 makes the processing-lag visible (lag = v*delay)
+GYRO_NOISE = 0.012      # = node gyro_noise_std
+R_R, R_B = 0.005, 0.01  # = node r_landmark, r_bearing
+Q_XY, Q_TH = 0.001, 0.0005    # = node q_xy, q_theta
 DELAYS = [(0, "Baseline (0 ms delay)"), (100, "Delay 100 ms"), (500, "Delay 500 ms")]
 
 
@@ -89,7 +89,7 @@ def run_ekf(gt, omega, delay_steps, seed=42):
                 H = np.array([[-dx/r, -dy/r, 0.0], [dy/r/r, -dx/r/r, -1.0]])
                 S = H@P@H.T + R; K = P@H.T@np.linalg.inv(S)
                 x = x + K@np.array([z_r-r, wrap(z_b-wrap(math.atan2(dy, dx)-x[2]))]); x[2] = wrap(x[2])
-                P = (np.eye(3)-K@H)@P
+                IKH = np.eye(3)-K@H; P = IKH@P@IKH.T + K@R@K.T   # Joseph form (matches C++)
         est[k] = [x[0], x[1]]; cov.append(P[:2, :2].copy())
     return est, cov
 

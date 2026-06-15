@@ -32,6 +32,11 @@ LM_RADIUS = 12.0             # always in view
 UPDATE_EVERY = 5            # landmark sensor at 10 Hz
 RNG = np.random.default_rng(7)
 
+# NOTE: this 3-panel figure is a didactic localization explainer (lecture-slide
+# style). Q is kept small and a small gyro bias is injected so the odometry drift
+# and the growing 2-sigma ellipses read clearly; these deviate ON PURPOSE from the
+# node defaults (q_xy=0.001, gyro_noise=0.012) used by the quantitative figures.
+
 
 def wrap(a):
     return math.atan2(math.sin(a), math.cos(a))
