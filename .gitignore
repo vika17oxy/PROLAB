@@ -30,6 +30,11 @@ intro_text.txt
 05 PRO*.pdf
 PRO *.pdf
 
+# One-off dev/debug scripts (superseded by prol_filters/scripts/)
+/check_rmse.py
+/diagnose.py
+/generate_test_data.py
+
 # OS cruft
 .DS_Store
 Thumbs.db
