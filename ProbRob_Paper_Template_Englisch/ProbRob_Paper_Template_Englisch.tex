@@ -37,8 +37,8 @@ Beyond the baseline comparison, the three mandatory experiments are carried out:
 process-noise ($Q$) variation, measurement-noise ($R$) variation, and
 time-delayed measurements (0, 100 and 500\,ms).
 On the asymmetric slalom the PF achieves the lowest position RMSE
-($0.009$\,m), the EKF is intermediate ($0.506$\,m), and the KF is the least
-accurate ($0.957$\,m), confirming the theoretical ordering.
+($0.011$\,m), the EKF is intermediate ($0.102$\,m), and the KF is the least
+accurate ($0.312$\,m), confirming the theoretical ordering.
 RMSE increases monotonically with measurement delay for all filters, the PF
 being most sensitive, while the $Q$ and $R$ sweeps both exhibit U-shaped optima
 that quantify the model-confidence versus sensor-trust trade-off.
@@ -194,7 +194,7 @@ waypoint slalom above.
 $\approx0.3$\,m of the landmark, due to the $1/r^2$ bearing Jacobian; placing the
 landmark off the path restores well-conditioned updates.
 (iv)~Repeated real-time runs were not reproducible because the best-effort IMU
-topic drops messages under load (the PF RMSE varied between $0.009$ and $0.69$\,m
+topic drops messages under load (the PF RMSE varied between $0.01$ and $0.69$\,m
 across identical runs); the parameter studies were therefore computed with a
 deterministic off-line replica of the identical filter mathematics, isolating
 the variable under test.
@@ -225,12 +225,12 @@ correct heading drift.
 
 Fig.~\ref{fig:poserr} shows the trajectory overlay together with the
 position error over time for the three filters.
-The PF error stays near a few centimetres throughout, the EKF settles around
-half a metre, and the KF error grows largest on the curved sections.
+The PF error stays near a centimetre throughout, the EKF settles around a
+tenth of a metre, and the KF error grows largest on the curved sections.
 Table~\ref{tab:rmse} summarises the position and heading RMSE and the per-step
 computational cost.
 The PF is more than $20\times$ more expensive per step than the Gaussian
-filters ($0.147$\,ms vs $\approx0.007$\,ms), yet it remains comfortably
+filters ($0.149$\,ms vs $\approx0.006$\,ms), yet it remains comfortably
 real-time at 50\,Hz.
 
 \begin{figure*}[!t]
@@ -249,9 +249,9 @@ real-time at 50\,Hz.
     \toprule
     \textbf{Metric} & \textbf{KF} & \textbf{EKF} & \textbf{PF} \\
     \midrule
-    Position RMSE [m]      & 0.957 & 0.506 & \textbf{0.009} \\
-    Heading RMSE [$^\circ$]& 21.2  & 11.3  & \textbf{0.67}  \\
-    Runtime / step [ms]    & 0.0065 & 0.0068 & 0.147 \\
+    Position RMSE [m]      & 0.312 & 0.102 & \textbf{0.011} \\
+    Heading RMSE [$^\circ$]& 7.0   & 2.7   & \textbf{1.0}   \\
+    Runtime / step [ms]    & 0.0054 & 0.0068 & 0.149 \\
     \bottomrule
   \end{tabular}}
   \caption{Baseline accuracy and runtime on the S-slalom trajectory.}
@@ -365,8 +365,8 @@ trade-off encoded by $Q$ and $R$.
 
 This paper compared KF, EKF, and PF for unicycle robot localization with a known
 landmark, on an obstacle-avoiding S-slalom trajectory implemented in ROS\,2.
-The PF achieved the lowest RMSE ($0.009$\,m), followed by the EKF
-($0.506$\,m) and the KF ($0.957$\,m); the gap between KF and EKF is explained by
+The PF achieved the lowest RMSE ($0.011$\,m), followed by the EKF
+($0.102$\,m) and the KF ($0.312$\,m); the gap between KF and EKF is explained by
 the EKF correctly propagating heading uncertainty into position via the motion
 Jacobian, which the KF omits.
 Measurement delays of up to $500$\,ms degraded all filters monotonically, the PF
