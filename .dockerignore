@@ -1,0 +1,6 @@
+ProbRob_Paper_Template_Englisch/
+*.md
+task.md
+.git/
+**/__pycache__/
+**/*.pyc

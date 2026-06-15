@@ -1,0 +1,25 @@
+# ROS2 / colcon build artifacts
+build/
+install/
+log/
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Large per-step filter logs (regenerate by running the simulation)
+data/**/*_log.csv
+*.tmp
+
+# LaTeX auxiliary files (keep .tex, .bbl and .pdf)
+*.aux
+*.out
+*.synctex.gz
+*.fdb_latexmk
+*.fls
+*.toc
+ProbRob_Paper_Template_Englisch/*.log
+
+# OS cruft
+.DS_Store
+Thumbs.db

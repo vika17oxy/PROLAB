@@ -1,0 +1,58 @@
+This is BibTeX, Version 0.99d (TeX Live 2022/dev/Debian)
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: ProbRob_Paper_Template_Englisch.aux
+The style file: IEEEtranS.bst
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated wiz_functions (elt_size=4) to 6000 items from 3000.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Database file #1: IEEEabrv.bib
+Database file #2: refs.bib
+-- IEEEtranS.bst version 1.14 (2015/08/26) by Michael Shell.
+-- http://www.michaelshell.org/tex/ieeetran/bibtex/
+-- See the "IEEEtran_bst_HOWTO.pdf" manual for usage information.
+** Sorting version - not for normal IEEE work.
+
+Done.
+You've used 5 entries,
+            4566 wiz_defined-function locations,
+            1462 strings with 19303 characters,
+and the built_in function-call counts, 4200 in all, are:
+= -- 354
+> -- 111
+< -- 30
++ -- 58
+- -- 26
+* -- 233
+:= -- 638
+add.period$ -- 10
+call.type$ -- 5
+change.case$ -- 26
+chr.to.int$ -- 72
+cite$ -- 5
+duplicate$ -- 258
+empty$ -- 322
+format.name$ -- 30
+if$ -- 938
+int.to.chr$ -- 0
+int.to.str$ -- 5
+missing$ -- 41
+newline$ -- 38
+num.names$ -- 10
+pop$ -- 115
+preamble$ -- 1
+purify$ -- 23
+quote$ -- 2
+skip$ -- 304
+stack$ -- 0
+substring$ -- 197
+swap$ -- 199
+text.length$ -- 6
+text.prefix$ -- 0
+top$ -- 6
+type$ -- 43
+warning$ -- 0
+while$ -- 22
+width$ -- 6
+write$ -- 66

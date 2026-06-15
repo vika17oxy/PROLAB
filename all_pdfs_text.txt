@@ -1,0 +1,1745 @@
+﻿=== FILE: kf_ekf | Pages: 45 ===
+--- PAGE 1 ---
+Probabilistic Robotics
+Kalman Filter & Extended Kalman Filter
+Lucas Muster, MSc
+
+--- PAGE 2 ---
+HW: Calculation Door Sensor
+PRO | Lucas Muster | 15.04.2025
+2
+
+--- PAGE 3 ---
+Overview
+• Kalman Filter:
+• Estimating states in linear Gaussian systems.
+• Predict and update steps for state estimation.
+• Extended Kalman Filter (EKF):
+• Handling non-linear systems with Taylor approximation.
+• EKF for localization and sensor fusion.
+PRO | Lucas Muster | 15.04.2025
+3
+
+--- PAGE 4 ---
+Recap: The Bayes Filter
+This results in a two-step approach 
+• Step 1: Prediction 
+• We rely on the previous state 
+• The robot is ”moved” using the kinematic model and the command 
+• We solve the integral, we get the prediction 
+The prediction (the conditional probability) is shortened to 𝑏𝑒𝑙( Ԧ𝑥𝑡)
+PRO | Lucas Muster | 15.04.2025
+4
+
+--- PAGE 5 ---
+Recap: The Bayes Filter
+• Step 1: Prediction 
+• Step 2: Correction 
+• Evaluation of prediction. 
+• Correction of prediction using a measurement.
+• The correction (the conditional probability) is shortened using 𝑏𝑒𝑙Ԧ𝑥𝑡.
+PRO | Lucas Muster | 15.04.2025
+5
+
+--- PAGE 6 ---
+Recap: The Bayes Filter
+• Merging 𝑝Ԧ𝑥𝑡| Ԧ𝑥𝑡−1, 𝑢𝑡and 𝑝Ԧ𝑧𝑡| Ԧ𝑥𝑡
+• Two-stage algorithm: Movement prediction and correction.
+• Approach:
+PRO | Lucas Muster | 15.04.2025
+6
+
+--- PAGE 7 ---
+Recap: Inaccuracy
+• Problem:
+• We have a system with (a lot of) uncertainty
+• Sensor System and Movement
+• Example:
+• Our mobile robot is driving forward
+• Wheel odometry
+• GPS Sensor
+PRO | Lucas Muster | 15.04.2025
+7
+
+--- PAGE 8 ---
+Core problem
+Two uncertain pieces of information :
+1.
+Motion Model
+• Based on physics
+• Drift
+2.
+Sensor
+• Measures directly
+• Noise
+PRO | Lucas Muster | 15.04.2025
+8
+
+--- PAGE 9 ---
+Unsicherheit als Verteilung
+• Belief = Probability
+• We start with:
+• Our uncertainty is Gaussian
+• What happens when we combine them?
+PRO | Lucas Muster | 15.04.2025
+9
+
+--- PAGE 10 ---
+Intuition des Kalman Gains
+• Fall 1: Bad sensor
+• big variance → trust motion
+• Fall 2: Sensor gut
+• small variance → trust sensor
+The Kalman filter is a weighted average, but one that is weighted intelligently.
+𝑒𝑠𝑡𝑖𝑚𝑎𝑡𝑒= 𝑤1 ⋅𝑝𝑟𝑒𝑑𝑖𝑐𝑡𝑖𝑜𝑛+ 𝑤2 ⋅𝑚𝑒𝑎𝑠𝑢𝑟𝑒𝑚𝑒𝑛𝑡
+→ Weights depend on uncertainty
+• Prediction: 𝑥= 10, high uncertainty
+• Measurement: 𝑧= 12, low uncertainty
+• Which is the best estimate? 
+PRO | Lucas Muster | 15.04.2025
+10
+
+--- PAGE 11 ---
+Variance = Uncertainty
+• A state estimate is not a single value, but a 
+distribution
+• The variance describes how uncertain we 
+are
+• Large variance → wide Gaussian
+• Small variance → narrow Gaussian
+Σ =
+𝜎2𝑥
+𝑐𝑜𝑣𝑥𝑦
+𝑐𝑜𝑣𝑦𝑥
+𝜎2𝑦
+PRO | Lucas Muster | 15.04.2025
+11
+
+--- PAGE 12 ---
+Exercise
+• A robot estimates its position using three different sources:
+• Motion model (prediction)
+• IMU (short-term accurate, but noisy)
+• GPS (absolute position, but less precise)
+• Each source provides an estimate with an uncertainty estimate.
+• Given:
+• Motion model: 𝜇= 10, 𝜎2 = 4
+• IMU: 𝜇= 11, 𝜎2 = 2
+• GPS: 𝜇= 13, 𝜎2 = 3
+• Tasks:
+•
+Implement a function that fuses multiple Gaussian estimates.
+•
+Compute the fused mean and variance.
+•
+Print/Plot the result(s).
+PRO | Lucas Muster | 15.04.2025
+12
+
+--- PAGE 13 ---
+From Bayes Filter to the Kalman Filter
+• 𝑏𝑒𝑙Ԧ𝑥𝑡 ~ 𝑁µ𝑡 Σ𝑡): The robots state at timeslot 𝑡 has an expectation of
+µ𝑡 and a covariance of Σ𝑡
+• 𝑝Ԧ𝑥𝑡| Ԧ𝑥𝑡−1, 𝑢𝑡: A robots motion at timeslot 𝑡 based on 
+𝑏𝑒𝑙Ԧ𝑥𝑡−1  described by a Gaussian.
+• 𝑝Ԧ𝑧𝑡| Ԧ𝑥𝑡: A evaluation of a pseudo measurement and the real 
+measurement
+PRO | Lucas Muster | 15.04.2025
+13
+
+--- PAGE 14 ---
+From Bayes Filter to the Kalman Filter
+• The solution of the integral in line 3: 𝑏𝑒𝑙Ԧ𝑥𝑡 is a Gaussian.
+• The solution of the multiplication in line 4: 𝑏𝑒𝑙Ԧ𝑥𝑡 is a Gaussian as well.
+→we ’call’ a Kalman filter function with the previous estimation, a
+measurement and a command and get a Gaussian containing the new
+estimation.
+However, it is not that simple:
+• How do we get from an input Gaussian to an output Gaussian?
+• How can we calculate the Gaussian’s parameter (µ𝑡 and Σ𝑡)?
+PRO | Lucas Muster | 15.04.2025
+14
+
+--- PAGE 15 ---
+Understanding Kalman Filter
+• Assumption: multivariate gaussian distribution (see cheat sheet).
+𝑝Ԧ𝑥𝑡= det 2𝜋𝑅
+1
+2 ∗ 𝑒(−1
+2
+Ԧ𝑥𝑡 −µ𝑡𝑇𝑅−1 Ԧ𝑥𝑡 −µ𝑡)
+• Transition is a linear movement with gaussian noise.
+• Basis:
+Ԧ𝑥𝑡= 𝐴Ԧ𝑥𝑡−1 + 𝐵𝑢𝑡+ 𝜖𝑡where 𝜖𝑡is gaussian noise
+𝑝Ԧ𝑥𝑡| Ԧ𝑥𝑡−1, 𝑢𝑡= det 2𝜋𝑅−1
+2 ∗ 𝑒(−1
+2
+Ԧ𝑥𝑡 −𝐴Ԧ𝑥𝑡−1−𝐵𝑢𝑡𝑇𝑅−1 Ԧ𝑥𝑡 −𝐴Ԧ𝑥𝑡−1−𝐵𝑢𝑡)
+PRO | Lucas Muster | 15.04.2025
+15
+
+--- PAGE 16 ---
+The Kalman Filter
+• State transition 𝑝Ԧ𝑥𝑡| Ԧ𝑥𝑡−1, 𝑢𝑡is linear 
+µ𝑡= 𝐴∗µ𝑡−1 + 𝐵∗𝑢𝑡+ 𝜖𝑡
+• Linear: µ𝑡is a linear combination of µ𝑡−1
+• Exercise:
+µ𝑡=
+𝑥𝑡
+𝑦𝑡
+𝜃𝑡
+= ? 
+PRO | Lucas Muster | 15.04.2025
+16
+
+--- PAGE 17 ---
+The Kalman Filter
+µ𝑡=
+𝑥𝑡
+𝑦𝑡
+𝜃𝑡
+=
+1
+0
+0
+0
+1
+0
+0
+0
+1
+∗
+𝑥𝑡
+𝑦𝑡
+𝜃𝑡
++
+1
+0
+0
+0
+1
+0
+0
+0
+1
+∗
+Δ𝑥
+Δ𝑦
+Δ𝜃
++ 𝜖𝑡
+PRO | Lucas Muster | 15.04.2025
+17
+
+--- PAGE 18 ---
+The Kalman Filter
+• State transition 𝑝Ԧ𝑥𝑡| Ԧ𝑥𝑡−1, 𝑢𝑡is linear 
+µ𝑡= 𝐴∗µ𝑡−1 + 𝐵∗𝑢𝑡+ 𝜖𝑡
+• Linear: µ𝑡is a linear combination of µ𝑡−1
+• Exercise:
+µ𝑡=
+𝑥𝑡
+ሶ𝑥𝑡
+𝑦𝑡
+ሶ𝑦𝑡
+= ? 
+PRO | Lucas Muster | 15.04.2025
+18
+
+--- PAGE 19 ---
+The Kalman Filter
+µ𝑡=
+𝑥𝑡
+ሶ𝑥𝑡
+𝑦𝑡
+ሶ𝑦𝑡
+=
+1
+Δ𝑡
+0
+0
+0
+1
+0
+0
+0
+0
+0
+0
+1
+Δ𝑡
+0
+1
+∗
+𝑥𝑡−1
+ሶ𝑥𝑡−1
+𝑦𝑡−1
+ሶ𝑦𝑡−1
++
+1
+2  Δ𝑡2
+0
+Δ𝑡
+0
+0
+0
+1
+2  Δ𝑡2
+Δ𝑡
+∗
+𝑎𝑥
+𝑎𝑦+ 𝜖𝑡
+PRO | Lucas Muster | 15.04.2025
+19
+
+--- PAGE 20 ---
+Understanding Kalman Filter: Measurement
+• We want to evaluate 𝑧𝑡relying on the prediction
+• We need the measurement matrix 𝐶, which maps from the state to a 
+pseudo measurement
+• The error of measurement is Gaussian distributed
+• Basis:
+ 
+ 
+ 
+Ԧ𝑧𝑡= 𝐶Ԧ𝑥𝑡+ 𝛿𝑡where 𝛿𝑡is gaussian noise
+𝑝Ԧ𝑧𝑡| Ԧ𝑥𝑡= det 2𝜋𝑄−1
+2  ∗ 𝑒(−1
+2
+Ԧ𝑧𝑡 −𝐶Ԧ𝑥𝑡𝑇𝑄−1 Ԧ𝑧𝑡 −𝐶Ԧ𝑥𝑡)
+PRO | Lucas Muster | 15.04.2025
+20
+
+--- PAGE 21 ---
+Understanding Kalman Filter: Measurement
+• In case of the IMU sensor:
+• Acceleration in x, y and the angular acceleration around the z - axis
+• But our state is in the world coordinate system
+• We have to rotate the IMU into the word coordinate system
+• Watch out: we are again getting a non linear system
+• For the Kalman filter  with the state Ԧ𝑥𝑡=
+𝑥𝑡
+𝑦𝑡
+𝜃𝑡
+ and a linear system we 
+could use only 𝜃
+• Ԧ𝑧𝑡= 𝐶Ԧ𝑥𝑡+ 𝛿𝑡where 𝛿𝑡is gaussian noise
+• How does C has to look like here?
+PRO | Lucas Muster | 15.04.2025
+21
+
+--- PAGE 22 ---
+Understanding Kalman Filter: Measurement
+• Who can be trusted more? Prediction or measurement?
+• We know the prediction’s uncertainty (see 𝑏𝑒𝑙Ԧ𝑥𝑡)
+• We do know the measurement noise 𝑄(we can calibrate that)
+• The Kalman gain 𝐾𝑡tries to calculate a ”trust”-value based on those 
+uncertainties
+PRO | Lucas Muster | 15.04.2025
+22
+
+--- PAGE 23 ---
+Understanding Kalman Filter: Measurement
+• The Kalman Gain determines how much we trust:
+• the prediction (model)
+• the measurement (sensor)
+• Interpretation
+• Large 𝐾𝑡→ trust measurement more
+• Small 𝐾𝑡→ trust prediction more
+• 𝐾𝑡is computed automatically based on uncertainty:
+• high measurement noise → small 𝐾𝑡 
+• high prediction uncertainty → large 𝐾𝑡
+PRO | Lucas Muster | 15.04.2025
+23
+
+--- PAGE 24 ---
+Understanding Kalman Filter
+• We discussed the motion and sensor models
+• What happened to the state?
+• The expectation µ𝑡 and covariance after applying the motion model are 
+calculated
+• ”Evaluation” of prediction relying on the measurement matrix 𝐶
+PRO | Lucas Muster | 15.04.2025
+24
+Picture source: https://www.codeproject.com/Articles/865935/Object-Tracking-Kalman-Filter-with-Ease
+The motion is ”uncertain”: The covariance will ”grow” 
+The sensor observes same physical action. Based on sensor noise, we can update the prediction.
+
+--- PAGE 25 ---
+Kalman Filter Algorithm: Prediction
+• Line 2: Apply the motion model
+• Line 3: Get prediction of covariance
+• Line 4: Calculates the Kalman gain 𝐾𝑡
+Analyze the equation carefully: Note the ratio of the ”converted” covariance of the prediction and the sensor covariance. Without 
+any linear algebra we see that high measurement noise will reduce the numbers of the Kalman gain.
+PRO | Lucas Muster | 15.04.2025
+25
+
+--- PAGE 26 ---
+Kalman Filter Algorithm: Correction
+• Line 5: Correction of expectation using Kalman gain
+• Line 6: Correction of covariance matrix
+• Line 7: Returns corrected belief
+PRO | Lucas Muster | 15.04.2025
+26
+
+--- PAGE 27 ---
+Exercise: Kalman Filter
+• Implement a simple Kalman Filter for robot pose estimation
+• Think of any linear system with state µ𝑡
+• Use a simple motion model and IMU measurements.
+• Simulate some data (Motion and measurements)
+• Implement a Kalman filter
+• Prediction step (2 and 3)
+• Compute the Kalman Gain (4)
+• Implement the update step (5 and 6)
+• Visualization of the true data, the estimated data and the IMU measurement
+• Plot the Kalman Gain over time
+PRO | Lucas Muster | 15.04.2025
+27
+
+--- PAGE 28 ---
+Restrictions of the Kalman Filter
+• Linear assumption problem 
+• State transition: 𝐴is a simplification (relies on a linear model) 
+• Measurement matrix: 𝐶is a simplification 
+• Example: Robot drives circle-like 
+• Gaussian assumption problem 
+• Gaussian noise of measurement is a simplification
+PRO | Lucas Muster | 15.04.2025
+28
+
+--- PAGE 29 ---
+We do not have a linear transition
+PRO | Lucas Muster | 15.04.2025
+29
+• The transition is not a linear model: a robot moves in circular pattern 
+• How to overcome this: we linearize the nonlinear function!
+• This is the extended Kalman filter (EKF)
+
+--- PAGE 30 ---
+The Extended Kalman Filter
+PRO | Lucas Muster | 15.04.2025
+30
+• The motion is implemented using 𝐴∗µ𝑡−1 + 𝐵∗𝑢𝑡
+• But for a differential driven robot we calculate:
+𝑋𝑡
+𝑌𝑡
+𝜃𝑡
+=
+𝑋𝑡−1
+𝑌𝑡−1
+𝜃𝑡−1
++
+𝛿𝑑 ∗cos(𝜃𝑡−1 + 𝛿𝜃)
+𝛿𝑑 ∗𝑠𝑖𝑛(𝜃𝑡−1 + 𝛿𝜃)
+𝛿𝜃
+ with 𝛿𝑑=
+Δ𝜙𝑙+Δ𝜙𝑟∗𝑟
+2
+and 𝛿𝜃=
+Δ𝜙𝑙+Δ𝜙𝑟∗𝑟
+𝑏
+• So, we know, the linear model will not fit well
+
+--- PAGE 31 ---
+The Extended Kalman Filter
+PRO | Lucas Muster | 15.04.2025
+31
+• EKF uses tailor expansion. 
+• Linearization for ”non-linear” transitions.
+• Allows ”more” non-linear systems
+• Step closer to ”real” systems
+• Still single guess using { µ𝑡, Σ𝑡}
+• Introduction of non-linear functions 
+• g(.) for state transition 
+• h(.) for measurement
+• Comparable to Kalman filter 
+• A, B: replaced by g(.) 
+• C: replaced by h(.)
+
+--- PAGE 32 ---
+The Extended Kalman Filter
+PRO | Lucas Muster | 15.04.2025
+32
+• EKF uses tailor expansion. 
+• Linearization for ”non-linear” transitions.
+• Allows ”more” non-linear systems
+• Step closer to ”real” systems
+• Still single guess using { µ𝑡, Σ𝑡}
+• Introduction of non-linear functions 
+• g(.) for state transition 
+• h(.) for measurement
+• Comparable to Kalman filter 
+• A, B: replaced by g(.) 
+• C: replaced by h(.)
+Ԧ𝑥𝑡= 𝑔(𝑢𝑡, Ԧ𝑥𝑡−1) + 𝜖𝑡
+Ԧ𝑧𝑡= ℎ( Ԧ𝑥𝑡) + 𝛿𝑡
+
+--- PAGE 33 ---
+EKF: New Challenge
+PRO | Lucas Muster | 15.04.2025
+33
+• Due to non-linear functions: No longer closed form solution
+• Kalman Filter: Exact calculation of belief
+• New Task: Estimate { µ𝑡, Σ𝑡} efficiently
+• New formulation of 𝑝Ԧ𝑥𝑡| Ԧ𝑥𝑡−1, 𝑢𝑡 and 𝑝Ԧ𝑧𝑡| Ԧ𝑥𝑡
+
+--- PAGE 34 ---
+• Because of 𝑔. , no closed form for gaussian distribution
+• Linearization using tailor expansion:
+𝑇𝑓𝑥; 𝑎= 𝑓𝑎+ 𝑓′ 𝑎∗𝑥−𝑎+ 𝑓′′ 𝑎
+2
+ ∗
+𝑥−𝑎2 + 𝑓′′′ 𝑎
+6
+ ∗
+𝑥−𝑎3 + …
+𝑇𝑓𝑥; 𝑎= ෍
+𝑛=0
+∞𝑓(𝑛)
+𝑛!  ∗𝑥−𝑎𝑛
+• Definition for first order tailer expansion:
+𝑇1𝑓𝑥; 𝑎≈𝑓𝑎+ 𝑓′ 𝑎∗𝑥−𝑎
+EKF: State Transition Probability 
+PRO | Lucas Muster | 15.04.2025
+34
+
+--- PAGE 35 ---
+EKF: State Transition Probability 
+PRO | Lucas Muster | 15.04.2025
+35
+• Due to that:
+𝑔𝑢𝑡, Ԧ𝑥𝑡−1 ≈𝑔𝑢𝑡, µ𝑡−1 + 𝑔′ 𝑢𝑡, µ𝑡−1
+Ԧ𝑥𝑡−1 −µ𝑡−1 = 𝑔𝑢𝑡, µ𝑡−1 + 𝐺𝑡Ԧ𝑥𝑡−1 −µ𝑡−1
+• 𝐺𝑡=
+𝜕𝑔
+𝜕𝑥| µ𝑡−1
+is the Jacobian
+• Now we can write an approximation for state transition probability
+𝑝Ԧ𝑥𝑡| Ԧ𝑥𝑡−1, 𝑢𝑡≈det 2𝜋𝑅−1
+2 ∗ 𝑒(−1
+2
+Ԧ𝑥𝑡 −𝑔𝑢𝑡, µ𝑡−1 −𝐺𝑡Ԧ𝑥𝑡−1−µ𝑡−1
+𝑇
+𝑅−1 Ԧ𝑥𝑡 −𝑔𝑢𝑡, µ𝑡−1 −𝐺𝑡Ԧ𝑥𝑡−1−µ𝑡−1
+)
+• Prediction approximation: 𝑔𝑢𝑡, µ𝑡−1 + 𝐺𝑡Ԧ𝑥𝑡−1 −µ𝑡−1
+
+--- PAGE 36 ---
+EKF: Nonlinear function g( )
+PRO | Lucas Muster | 15.04.2025
+36
+• For the state: 
+ Ԧ𝑥𝑡 =
+𝑥𝑡
+𝑦𝑡
+𝜃𝑡
+ 𝑎𝑛𝑑 𝑢𝑡= 𝑣𝑡
+𝜔𝑡
+
+--- PAGE 37 ---
+EKF: Nonlinear function g( )
+PRO | Lucas Muster | 15.04.2025
+37
+• For the state: 
+ Ԧ𝑥𝑡 =
+𝑥𝑡
+𝑦𝑡
+𝜃𝑡
+ 𝑎𝑛𝑑 𝑢𝑡= 𝑣𝑡
+𝜔𝑡
+• For one time step:
+𝑥𝑡= 𝑥𝑡−1 + 𝑣𝑡∗cos 𝜃𝑡−1 ∆𝑡
+𝑦𝑡= 𝑦𝑡−1 + 𝑣𝑡∗sin 𝜃𝑡−1 ∆𝑡
+𝜃𝑡= 𝜃𝑡−1 + 𝜔𝑡∆𝑡
+• Or in vector form:
+𝑔𝑢𝑡, 𝑥𝑡−1 =
+𝑥𝑡−1 + 𝑣𝑡∗cos 𝜃𝑡−1 ∆𝑡 
+𝑦𝑡−1 + 𝑣𝑡∗sin 𝜃𝑡−1 ∆𝑡 
+𝜃𝑡= 𝜃𝑡−1 + 𝜔𝑡∆𝑡
+
+--- PAGE 38 ---
+EKF: Jacobian G
+PRO | Lucas Muster | 15.04.2025
+38
+• 𝐺𝑡=
+𝜕𝑔
+𝜕𝑥| µ𝑡−1
+ with state Ԧ𝑥𝑡 =
+𝑥𝑡
+𝑦𝑡
+𝜃𝑡
+
+--- PAGE 39 ---
+EKF: Jacobian G
+PRO | Lucas Muster | 15.04.2025
+39
+• 𝐺𝑡=
+𝜕𝑔
+𝜕𝑥| µ𝑡−1
+ with state Ԧ𝑥𝑡 =
+𝑥𝑡
+𝑦𝑡
+𝜃𝑡
+𝑔1 = 𝑥𝑡−1 + 𝑣𝑡∗cos 𝜃𝑡−1 ∆𝑡
+𝑔2 = 𝑦𝑡−1 + 𝑣𝑡∗sin 𝜃𝑡−1 ∆𝑡
+𝑔3 = 𝜃𝑡−1 + 𝜔𝑡∆𝑡
+
+--- PAGE 40 ---
+EKF: Jacobian G
+PRO | Lucas Muster | 15.04.2025
+40
+• 𝐺𝑡=
+𝜕𝑔
+𝜕𝑥| µ𝑡−1
+ with state Ԧ𝑥𝑡 =
+𝑥𝑡
+𝑦𝑡
+𝜃𝑡
+𝑔1 = 𝑥𝑡−1 + 𝑣𝑡∗cos 𝜃𝑡−1 ∆𝑡
+𝑔2 = 𝑦𝑡−1 + 𝑣𝑡∗sin 𝜃𝑡−1 ∆𝑡
+𝑔3 = 𝜃𝑡−1 + 𝜔𝑡∆𝑡
+𝜕𝑔1
+𝜕𝑥= 1
+𝜕𝑔1
+𝜕𝑦= 0
+𝜕𝑔1
+𝜕𝜃= − 𝑣𝑡∗sin 𝜃𝑡−1 ∆𝑡
+𝜕𝑔2
+𝜕𝑥= 0
+𝜕𝑔2
+𝜕𝑦= 1
+𝜕𝑔2
+𝜕𝜃= 𝑣𝑡∗cos 𝜃𝑡−1 ∆𝑡
+𝜕𝑔3
+𝜕𝑥= 0
+𝜕𝑔3
+𝜕𝑦= 0
+𝜕𝑔3
+𝜕𝜃= 1
+
+--- PAGE 41 ---
+EKF: Jacobian G
+PRO | Lucas Muster | 15.04.2025
+41
+• 𝐺𝑡=
+𝜕𝑔
+𝜕𝑥| µ𝑡−1
+ with state Ԧ𝑥𝑡 =
+𝑥𝑡
+𝑦𝑡
+𝜃𝑡
+𝐺𝑡=
+1
+0
+− 𝑣𝑡∗sin 𝜃𝑡−1 ∆𝑡 
+0
+1
+𝑣𝑡∗cos 𝜃𝑡−1 ∆𝑡 
+0
+0
+1
+
+--- PAGE 42 ---
+EKF: The Algorithm
+PRO | Lucas Muster | 15.04.2025
+42
+• After including and solving the (not so easy) equations from the Bayes 
+Filter (Thrun, 2006, chapter 3.3.4) we get:
+
+--- PAGE 43 ---
+EKF: The Algorithm
+PRO | Lucas Muster | 15.04.2025
+43
+• After including and solving the (not so easy) equations from the Bayes 
+Filter (Thrun, 2006, chapter 3.3.4) we get:
+
+--- PAGE 44 ---
+Exercise: Extended Kalman Filter
+• Implement an simple EKF for robot pose estimation
+• Think of any nonlinear system with state µ𝑡
+• Use a simple motion model and IMU measurements.
+• Simulate some data (Motion and measurements)
+• Implement an Extended Kalman filter
+• Prediction step (2 and 3)
+• Compute the Kalman Gain (4)
+• Implement the update step (5 and 6)
+• Visualization of the true data, the estimated data and the IMU measurement
+• Plot the Kalman Gain over time
+PRO | Lucas Muster | 15.04.2025
+44
+
+--- PAGE 45 ---
+Probabilistic Robotics
+Kalman Filter & Extended Kalman Filter
+Lucas Muster, MSc
+
+=== FILE: localization | Pages: 41 ===
+--- PAGE 1 ---
+Probabilistic Robotics
+Localization & Mapping
+Lucas Muster, MSc
+
+--- PAGE 2 ---
+Uncertainty as a distribution
+• Belief = Probability
+• We start with:
+• Our uncertainty is Gaussian
+• What happens when we combine them?
+PRO | Lucas Muster | 22.04.2025
+2
+
+--- PAGE 3 ---
+Recap: Variance = Uncertainty
+• A state estimate is not a single value, but a 
+distribution
+• The variance describes how uncertain we 
+are
+• Large variance → wide Gaussian
+• Small variance → narrow Gaussian
+Σ =
+𝜎2𝑥
+𝑐𝑜𝑣𝑥𝑦
+𝑐𝑜𝑣𝑦𝑥
+𝜎2𝑦
+PRO | Lucas Muster | 22.04.2025
+3
+
+--- PAGE 4 ---
+Understanding Kalman Filter
+• We discussed the motion and sensor models
+• What happened to the state?
+• The expectation µ𝑡 and covariance after applying the motion model are 
+calculated
+• ”Evaluation” of prediction relying on the measurement matrix 𝐶
+PRO | Lucas Muster | 22.04.2025
+4
+Picture source: https://www.codeproject.com/Articles/865935/Object-Tracking-Kalman-Filter-with-Ease
+The motion is ”uncertain”: The covariance will ”grow” 
+The sensor observes same physical action. Based on sensor noise, we can update the prediction.
+
+--- PAGE 5 ---
+Recap: Exercise
+• A robot estimates its position using three different sources:
+• Motion model (prediction)
+• IMU (short-term accurate, but noisy)
+• GPS (absolute position, but less precise)
+• Each source provides an estimate with an uncertainty estimate.
+• Given:
+• Motion model: 𝜇= 10, 𝜎2 = 4
+• IMU: 𝜇= 11, 𝜎2 = 2
+• GPS: 𝜇= 13, 𝜎2 = 3
+• Tasks:
+•
+Implement a function that fuses multiple Gaussian estimates.
+•
+Compute the fused mean and variance.
+•
+Print/Plot the result(s).
+PRO | Lucas Muster | 22.04.2025
+5
+
+--- PAGE 6 ---
+Recap: Exercise: Kalman Filter
+• Implement a simple Kalman Filter for robot pose estimation
+• Think of any linear system with state µ𝑡
+• Use a simple motion model and IMU measurements.
+• Simulate some data (Motion and measurements)
+• Implement a Kalman filter
+•
+Prediction step (2 and 3)
+•
+Compute the Kalman Gain (4)
+•
+Implement the update step (5 and 6)
+• Visualization of the true data, the estimated data and the 
+IMU measurement
+• Plot the Kalman Gain over time
+PRO | Lucas Muster | 22.04.2025
+6
+
+--- PAGE 7 ---
+Recap: Exercise: Extended Kalman Filter
+• Implement an simple EKF for robot pose estimation
+• Think of any nonlinear system with state µ𝑡
+• Use a motion model and IMU measurements.
+• Simulate some data (Motion and measurements)
+• Implement an Extended Kalman filter
+•
+Prediction step (2 and 3)
+•
+Compute the Kalman Gain (4)
+•
+Implement the update step (5 and 6)
+• Visualization of the true data, the estimated data and the IMU 
+measurement
+• Plot the Kalman Gain over time
+PRO | Lucas Muster | 22.04.2025
+7
+
+--- PAGE 8 ---
+Introduction
+• The problem: Drift
+• Imagine a robot driving through a building using only wheel odometry.
+• Small errors accumulate over time:
+• Error in 𝑣→ wrong distance 
+• Error in 𝜔→ wrong angle 
+• These errors are integrated over time:
+• the estimated trajectory drifts away from the true trajectory 
+• the uncertainty keeps growing
+• Without external measurements, even an EKF will drift.
+PRO | Lucas Muster | 22.04.2025
+8
+
+--- PAGE 9 ---
+Introduction
+PRO | Lucas Muster | 22.04.2025
+9
+• Till now, we fused information:
+• 𝑢𝑡: motion command (e.g. in mobile robotics the odometry)
+•  Ԧ𝑧𝑡: the measurement
+• The new state { µ𝑡, Σ𝑡} was estimated
+• However:
+• The motion is smoothed and corrected in accordance with the sensor
+• This estimation will not be true
+• Still, we drift
+• Goal: to overcome this drift →but how?
+
+--- PAGE 10 ---
+Introduction
+PRO | Lucas Muster | 22.04.2025
+10
+
+--- PAGE 11 ---
+Localization with landmarks
+PRO | Lucas Muster | 22.04.2025
+11
+• Therefore, we use fixed points in the world frame.
+• We try to convert the raw sensor values to more clever representations.
+• Instead of raw distances from a range finder, we detect „landmarks“.
+• Such landmarks could be:
+−A visual marker placed in the room.
+−A geometric unambiguous object (e.g. a cylinder in a empty room).
+−...
+• The landmarks are known a-priori (stored in a „map“ before we start).
+• We adapt the EKF algorithm and use the landmarks in the correction.
+
+--- PAGE 12 ---
+EKF: Localization with landmarks
+PRO | Lucas Muster | 22.04.2025
+12
+
+--- PAGE 13 ---
+What is a landmark?
+PRO | Lucas Muster | 22.04.2025
+13
+• A landmark is a known reference point in the environment
+• It has a fixed position in the world
+• The robot can detect and recognize it
+• Examples:
+• A visual marker (e.g. AprilTag) 
+• A geometric object (e.g. corner, cylinder) 
+• A reflective object (LiDAR)
+
+--- PAGE 14 ---
+Landmarks and maps
+PRO | Lucas Muster | 22.04.2025
+14
+• (Here) a map is a gathering of landmarks 
+• 2D location in a space
+• Each landmark has a ”signature”
+−A vector with user defined information
+−Describes some properties of the landmark 
+• The landmark j is described by: 𝑚𝑗= (𝑥𝑗𝑦𝑗 Ԧ𝑠𝑗)
+• Thus in this chapter, a map is described by
+𝑚𝑗=
+𝑚0
+⋮
+𝑚𝑛
+=
+𝑥0
+𝑦0
+Ԧ𝑠0
+⋮
+⋮
+⋮
+𝑥𝑛
+𝑦𝑛
+Ԧ𝑠𝑛
+
+--- PAGE 15 ---
+Measuring a Landmark
+PRO | Lucas Muster | 22.04.2025
+15
+• When the robot observes a landmark, it measures:
+𝑧=
+𝑟
+𝜙
+𝑟: distance to the landmark 
+𝜙: angle relative to the robot 
+• The landmark position in the map is global.
+• The robot measurement is relative.
+
+--- PAGE 16 ---
+Expected Measurement
+PRO | Lucas Muster | 22.04.2025
+16
+• The robot can predict what it should measure:
+Ƹ𝑧= ℎ(𝑥, 𝑚)
+𝑥: robot pose
+𝑚: landmark position
+• The robot knows:
+• its estimated pose 
+• the landmark position in the map
+→We can compute the expected measurement
+𝑚𝑒𝑎𝑠𝑢𝑟𝑒𝑚𝑒𝑛𝑡𝑧 𝑣𝑠. 𝑝𝑟𝑒𝑑𝑖𝑐𝑡𝑖𝑜𝑛Ƹ𝑧
+
+--- PAGE 17 ---
+EKF: Correspondence
+PRO | Lucas Muster | 22.04.2025
+17
+• For processing, a measurement must correspond to a landmark,  
+• We recognise in the timeslot 𝑡 the landmarks Ԧ𝑧𝑡
+1, Ԧ𝑧𝑡
+2, … , Ԧ𝑧𝑡
+𝐽
+• Each measurement Ԧ𝑧𝑡
+𝑗 corresponds to the landmark 𝑐𝑡
+𝑗 in the map
+• 𝑐𝑡
+𝑗 allocates the measurement to a map element (a landmark).                           
+If 𝑐𝑡
+𝑗 = 1, the landmark 𝑗 of the measurement Ԧ𝑧𝑡
+𝑗 belongs to map element 1.
+ 
+• Correspondence vector ct
+ 
+ 
+ 
+ 
+ 
+Ԧ𝑐𝑡= (𝑐𝑡
+1 . . . 𝑐𝑡
+𝐽)𝑇
+
+--- PAGE 18 ---
+EKF: Localization with landmarks
+PRO | Lucas Muster | 22.04.2025
+18
+• Our goal: Adapt the EKF’s correction 
+• Note: the correction can be called when a landmark is visible
+• Thus we adapt the EKF: 
+1. Prediction as previously: The uncertainty grows 
+2. Correction: not possible all the time 
+3. If we ”see” a landmark: Correction is possible 
+→The uncertainty will grow if no landmark is available 
+→When we see a landmark the uncertainty will shrink
+
+--- PAGE 19 ---
+EKF: Localization with landmarks
+PRO | Lucas Muster | 22.04.2025
+19
+Figure: EKF Localization (Thrun, 2006)
+
+--- PAGE 20 ---
+Intuition: One Landmark Correction
+PRO | Lucas Muster | 22.04.2025
+20
+• We simplify the EKF:
+1. We know:
+- robot pose (estimate)
+- landmark position (map)
+2. We can predict:
+- what we should measure
+3. We compare:
+- measurement vs prediction
+4. We correct the pose
+
+--- PAGE 21 ---
+Exercise: Landmark-based Correction
+PRO | Lucas Muster | 22.04.2025
+21
+• Given:
+• Robot pose 𝑥= (𝑥, 𝑦, 𝜃)
+• Landmark position 𝑚= (𝑚𝑥, 𝑚𝑦)
+1. Compute the expected measurement:
+Ƹ𝑟, ො𝜑
+2. Assume a noisy measurement:
+𝑟, 𝜑
+3. Compute the innovation: 𝑒= 𝑧−
+Ƹ𝑧
+4. Apply a simple correction to the pose
+
+--- PAGE 22 ---
+EKF: Adapting the Bayes Filter
+PRO | Lucas Muster | 22.04.2025
+22
+• Several things need to be changed 
+• The Bayes filter is missing the map 
+• We must additionally conditioning on the 𝑚
+Figure: Markov Localization (Thrun, 2006)
+
+--- PAGE 23 ---
+EKF: Adapting the Bayes Filter
+PRO | Lucas Muster | 22.04.2025
+23
+• Now, we can adapt the structure and implement the localization in the EKF 
+algorithm
+• Steps for the implementation: 
+• We assume, that the map does not influence the motion 
+𝑝Ԧ𝑥𝑡| Ԧ𝑥𝑡−1, 𝑢𝑡, 𝑚= 𝑝Ԧ𝑥𝑡| Ԧ𝑥𝑡−1, 𝑢𝑡
+• The prediction (applying the motion model) remains the same 
+• The correction processes the landmarks (if visible)
+−We process all landmarks in a loop
+−The map is in a world frame, the measurement in the sensor frame.
+−In each iteration of the loop: a individual correction
+−All other parts remains the same (Jakobi matrices, Kalman Gain)
+
+--- PAGE 24 ---
+EKF: Adapting the Bayes Filter
+PRO | Lucas Muster | 22.04.2025
+24
+• We start with the (EKF) prediction
+• The general algorithm is implemented for a diff. driven robot
+• g(.) is implemented
+• Based on that, G was calculated
+Figure: EKF Localization (Prediction) (Thrun, 2006)
+
+--- PAGE 25 ---
+EKF: Adapting the Bayes Filter
+PRO | Lucas Muster | 22.04.2025
+25
+• The landmark-based correction
+• Match map elements (L.7) 
+• Convert frames (Z.8-10), calculate pseudo 
+measurement 
+• Calculate Jakobi
+• Get Kalman gain for each iteration
+• Afterwards: Do correction for all landmarks
+Figure: EKF Localization (Correction) (Thrun, 2006)
+
+--- PAGE 26 ---
+EKF: Adapting the Bayes Filter
+PRO | Lucas Muster | 22.04.2025
+26
+• We can compensate drift based on global information.
+• The EKF was extended with landmark-based correction.
+• However, there are still problems
+• Gaussian Noise: this is still not the reality
+• Motion/Sensor model: Still an approximation
+• Single Guess: We have a single estimation of the robots pose. What happen if 
+this is totally wrong?
+
+--- PAGE 27 ---
+Mapping
+PRO | Lucas Muster | 22.04.2025
+27
+• We refer a ”map” to a set of possible representations
+• A set of landmarks, where... 
+• a map 𝒎=
+𝑚1
+𝑇, … , 𝑚𝑚
+𝑇
+𝑇consists of 𝑚landmarks 𝑚𝑗
+• each landmark is represented by 𝑚𝑗= (𝑥𝑗, 𝑦𝑗, 𝑚𝑗)
+• each landmark has a ”signature”, a used defined vector describing any quantity 
+(e.g.: color or shape information used to distinguish the landmarks) 
+• A set of cells describing the occupancy of a space in a frame, where... 
+• the map 𝒎= {𝑚1, . . . , 𝑚𝑚} is a set of cells 
+• 𝑝(𝑚𝑖) is estimated from data 
+• we want to estimate 𝑝(𝒎| Ԧ𝑧1:𝑡, Ԧ𝑥1:𝑡) (Note, we include the pose!)
+• We focusing here on occupancy grids (Typically used in ROS - see gmapping) 
+
+--- PAGE 28 ---
+Occupancy Grid Algorithm
+• We now assume a known path: Ԧ𝑥1:𝑡 
+• Since we know the path - no 𝑢1:𝑡
+• The measurement gives information for cell occupancy
+• We use 𝑝𝑚𝑗= 1 ≔𝑝(𝑚𝑗) to get the probability of a occupied cell 𝑚𝑗 
+• We assume independence of the cells: 
+𝑝𝒎Ԧ𝑧1:𝑡, Ԧ𝑥1:𝑡= ෑ
+𝑗
+𝑝(𝑚𝑗| Ԧ𝑧1:𝑡, Ԧ𝑥1:𝑡) 
+In a huge map, evaluating 𝑝(𝒎| Ԧ𝑧1:𝑡, Ԧ𝑥1:𝑡) is hard - we do have many cells. 
+→We use a trick: we check the sensor used for mapping (e.g.: a laser scanner) 
+and update the cells currently in the field of view.
+PRO | Lucas Muster | 22.04.2025
+28
+
+--- PAGE 29 ---
+Occupancy Grid Algorithm
+• Example of 2D scanner integration
+• We analyse all valid scans (we check for 
+𝑧𝑚𝑖𝑛and 𝑧𝑚𝑎𝑥)
+• If hit is behind a cell: this cell will be ”free”
+• If a hit in a cell: this cell is likely to be 
+occupied 
+PRO | Lucas Muster | 22.04.2025
+29
+
+--- PAGE 30 ---
+Occupancy Grid Algorithm
+PRO | Lucas Muster | 22.04.2025
+30
+
+--- PAGE 31 ---
+Occupancy Grid Algorithm
+• We want to know all the cell information
+• For each cell we want to know: How likely is the cell occupied?
+• However, instead of calculating directly with the probability, we use the 
+log-odds.
+• Because updates involving probabilities are often difficult to handle.
+• With log-odds, updates become simple additions rather than 
+complicated multiplications.
+𝑙𝑡,𝑖= log
+𝑝(𝑚𝑗| Ԧ𝑧1:𝑡, Ԧ𝑥1:𝑡)
+1 −𝑝(𝑚𝑗| Ԧ𝑧1:𝑡, Ԧ𝑥1:𝑡) 
+PRO | Lucas Muster | 22.04.2025
+31
+
+--- PAGE 32 ---
+Occupancy Grid Algorithm
+This means:
+• if 𝑙𝑡,𝑖> 0: The cell is more likely to be occupied
+• if 𝑙𝑡,𝑖< 0: The cell is more likely to be free
+• if 𝑙𝑡,𝑖= 0: Undecided, so typically 𝑝= 0.
+𝑙𝑡,𝑖= log
+𝑝(𝑚𝑗| Ԧ𝑧1:𝑡, Ԧ𝑥1:𝑡)
+1 −𝑝(𝑚𝑗| Ԧ𝑧1:𝑡, Ԧ𝑥1:𝑡) 
+PRO | Lucas Muster | 22.04.2025
+32
+
+--- PAGE 33 ---
+Occupancy Grid Algorithm
+• Line 1: Function called with the prev. log odds, Ԧ𝑥𝑡 and Ԧ𝑧𝑡
+• Line 2: This loop tries to update all cells in the map 
+• Line 3: Checks if current cell can be observed by the sensor 
+• Line 4: If yes - update the cell
+PRO | Lucas Muster | 22.04.2025
+33
+
+--- PAGE 34 ---
+Occupancy Grid Algorithm
+PRO | Lucas Muster | 22.04.2025
+34
+
+--- PAGE 35 ---
+Open problems
+• We will drift somehow - when we drive cycles, it will typically not work 
+properly (We need loop-closure methods)
+• Sensors do have noise. We may need to post-process the map
+• Imagine a 100 𝑚2 area with cells having a length of 0.01 𝑚: 
+→We need to manage 106 cells
+• Typically, a single sensor can not distinguish very similar places and 
+thus ambiguity occurs
+PRO | Lucas Muster | 22.04.2025
+35
+
+--- PAGE 36 ---
+SLAM: Introduction
+• Simultaneous Localization and Mapping
+• We do not know the map and the robot pose
+• Both are uncertain and must be estimated
+→Goal of SLAM: estimate robot trajectory and map simultaneously
+• New approach: 𝑝( Ԧ𝑥𝑡, 𝑚| Ԧ𝑧1:𝑡, 𝑢1:𝑡)
+• Remember: Bayes localization 𝑝Ԧ𝑥𝑡Ԧ𝑧1:𝑡, 𝑢1:𝑡, 𝑚
+• New questions: 
+• How can we estimate the map simultaneously to the pose? 
+• How can we adapt EKF localization for SLAM?
+PRO | Lucas Muster | 22.04.2025
+36
+
+--- PAGE 37 ---
+SLAM: Introduction
+• SLAM tackles the problem of 
+𝑝( Ԧ𝑥𝑡, 𝑚| Ԧ𝑧1:𝑡, 𝑢1:𝑡) = න… න෍
+Ԧ𝑐1
+… ෍
+Ԧ𝑐𝑡−1
+𝑝( Ԧ𝑥1:𝑡, 𝑚, Ԧ𝑐1:𝑡| Ԧ𝑧1:𝑡, 𝑢1:𝑡) 𝑑Ԧ𝑥1 … 𝑑Ԧ𝑥𝑡−1
+• We actually do not want to solve that now. 
+• In this lecture, we discuss a EKF-based simplification. 
+• Other methods such as the GraphSLAM are discussed in the upcoming 
+semester.
+PRO | Lucas Muster | 22.04.2025
+37
+
+--- PAGE 38 ---
+EKF Unknown Correspondence
+• In EKF and EKF localization, we now the correspondence
+• Imaging an unknown correspondence vector Ԧ𝑐𝑡
+• We may estimate the correspondence
+Ƹ𝑐𝑡= arg 𝑚𝑎𝑥𝑐𝑡 𝑝𝑧𝑡 𝑐𝑡, 𝑚, … )
+• We can use a Gaussian for that:
+arg 𝑚𝑎𝑥𝑘 det 2𝜋𝑆𝑡
+𝑘
+1
+2 exp(−1
+2 Ԧ𝑧𝑡
+𝑖−መԦ𝑧𝑡
+𝑘𝑇𝑆𝑡
+𝑘
+1
+2 ( Ԧ𝑧𝑡
+𝑖−መԦ𝑧𝑡
+𝑘))
+PRO | Lucas Muster | 22.04.2025
+38
+
+--- PAGE 39 ---
+EKF Unknown Correspondence
+• This can be used for a SLAM approach 
+• Check likelihood of landmark (See equation above)
+• Decide if landmark is new or not (add landmark or use 
+correspondence) 
+• If landmark is new →add it to map
+• →EKF SLAM: Adapting the EKF Localization
+PRO | Lucas Muster | 22.04.2025
+39
+
+--- PAGE 40 ---
+Next steps
+• Particle Filter
+• Introduction
+• Algorithm
+• Implementation
+• Sensor Model
+• Motion Model
+PRO | Lucas Muster | 22.04.2025
+40
+
+--- PAGE 41 ---
+Probabilistic Robotics
+Localization & Mapping
+Lucas Muster, MSc
+
+=== FILE: pf | Pages: 25 ===
+--- PAGE 1 ---
+Probabilistic Robotics
+Particle Filter
+Lucas Muster, MSc
+
+--- PAGE 2 ---
+Particle Filters: Concept and Idea
+PRO | Lucas Muster | 29.04.2025
+2
+• Our base so far:
+• Bayes Filter 
+• Gaussian distributions: Process and measurement noise 
+• Solving the drift problem: Use maps 
+However, we still have a single guess 
+The noise is not distributed normally 
+Do a simple experiment: Robot navigates N times the same path
+The point cloud has an non-elliptic shape (Not a Gaussian)
+
+--- PAGE 3 ---
+Particle Filters: Multiple Guesses
+PRO | Lucas Muster | 29.04.2025
+3
+• Previous algorithms used unimodal models {µ𝑡,Σ𝑡} 
+• Representation is limited 
+• Multiple hypothesis are not possible
+Figure: EKF Localization (Thrun, 2006). Note, that a single guess is used
+
+--- PAGE 4 ---
+Particle Filters: Concept and Idea
+PRO | Lucas Muster | 29.04.2025
+4
+• Do a simple experiment: Robot navigates N times the same path
+• The point cloud has an non-elliptic shape (Not a Gaussian)
+
+--- PAGE 5 ---
+Particle Filters: Real kinematic models
+PRO | Lucas Muster | 29.04.2025
+5
+• So far, linear models (KF) or linearization (EKF)
+• We can simulate a noisy motion:
+• As you can see above, we actually do not know the source of the noise. We 
+do have a physical model and can apply ”noise” to the inputs (wheel motion). 
+Figure: Motion simulation with different noise source (Thrun,2006)
+
+--- PAGE 6 ---
+Particle Filters: Unknown Models
+PRO | Lucas Muster | 29.04.2025
+6
+• Transition and Measurement models are approximations 
+• Error in models: Limited opportunities of ”methods” (e.g.: tailor 
+approximation) 
+• Model representation does not represent ”real” relationships 
+• Goal of particle filters (in this context) 
+• Represent pose of robot using position-probability on ”many” possible places
+• Overcome limitations of linear and linearized models: close to reality
+
+--- PAGE 7 ---
+Particle Filters: Example
+PRO | Lucas Muster | 29.04.2025
+7
+In this example, hundreds of particles were placed randomly in the map. After a few
+meters, the algorithm seems to start converging to the true pose, there are just a few
+particles in the right rooms.
+However, still many particles are totally on the wrong place (see ”Robot position”).
+Question: Why do you think do the particles vanish in the right side of the map?
+
+--- PAGE 8 ---
+Particle Filters: Example
+PRO | Lucas Muster | 29.04.2025
+8
+After motion, four clusters were established. 
+Question 1: Why are so many particles in so few areas of the map? 
+Question 2: Why are four clusters at the four corners of the left side of the map? 
+You see, there are many hypothesis (=multiple guesses). In real applications, this approach lead to very reliable localization 
+approaches. If a new measurement indicates, that the true pose in on the right side a lot of new particles will appear there.
+To reach areas where are no particles any more, random particle placement after n steps is possible.
+
+--- PAGE 9 ---
+Particle Filters: Example
+PRO | Lucas Muster | 29.04.2025
+9
+We navigate to the hallway. There is just a small cluster. 
+Question: Why are there no more four clusters?
+
+--- PAGE 10 ---
+Particle Filters: MCMC
+PRO | Lucas Muster | 29.04.2025
+10
+• We will continue with MCMC
+• Concept
+• Sampling and re-sampling (you already know sampling) 
+• MCMC algorithm for mobile robots
+• Sampling from a motion model
+• Localization algorithm and map usage 
+Note: We already know occupancy maps and sampling from motion 
+models
+
+--- PAGE 11 ---
+Particle Filters: Concept
+PRO | Lucas Muster | 29.04.2025
+11
+• Benefit 1: Model more accurate (non-linear) coherences 
+• Benefit 2: Simple algorithms 
+• Benefit 3: Easy to understand 
+• Shortcoming: Complex math
+• Sampling: Take examples from distributions
+• Sequential Markov Chain Monte Carlo (MCMC) algorithms
+• Adaption for robotics (simplification)
+
+--- PAGE 12 ---
+Particle Filters: Sampling approach 
+PRO | Lucas Muster | 29.04.2025
+12
+• Take examples from known distribution 
+• We wish to calculate the expectation of a function 𝐸[𝑓]
+𝐸𝑓= න𝑓Ԧ𝑧𝑝Ԧ𝑧𝑑Ԧ𝑧
+• Assumption: We cannot calculate this equation (too complex, 
+distribution unknown)
+• We can take samples from 𝑝Ԧ𝑧: Using estimator መ𝑓
+• For large number of samples: 𝐸𝑓= 𝐸መ𝑓
+
+--- PAGE 13 ---
+Particle Filters: Sampling approach Basics
+PRO | Lucas Muster | 29.04.2025
+13
+• Problem: We do not know 𝑝Ԧ𝑧.
+• Key idea: We use a ”proposal” distribution 𝑞Ԧ𝑧
+• We define 𝑞Ԧ𝑧(e.g.: Gaussian or uniform distribution) 
+• It is easy to sample form 𝑞Ԧ𝑧
+• Due to that we can use a Monte-Carlo-Estimation:
+𝐸𝑓= න𝑓Ԧ𝑧𝑝Ԧ𝑧𝑑Ԧ𝑧= න𝑓Ԧ𝑧𝑝Ԧ𝑧
+𝑞Ԧ𝑧𝑞Ԧ𝑧𝑑Ԧ𝑧≈1
+𝐿෍
+𝐼=0
+𝐿𝑝Ԧ𝑧𝑙
+𝑞Ԧ𝑧𝑙𝑓Ԧ𝑧𝑙= 1
+𝐿෍
+𝐼=0
+𝐿
+𝑟𝐼𝑓Ԧ𝑧𝑙
+• We sample from q(z) and using 𝑟𝐼(Importance Weight) to get unknown 
+distribution
+
+--- PAGE 14 ---
+Particle Filters for Mobile Robots
+PRO | Lucas Muster | 29.04.2025
+14
+• We apply the MCMC strategy
+• We define 𝑝Ԧ𝑥𝑡| Ԧ𝑥𝑡−1, 𝑢𝑡
+• We sample from the motion model
+This ”moves” each sample 
+• The sensor value is used to ”weight” each particle (𝑝Ԧ𝑧𝑡| Ԧ𝑥𝑡)
+We have a measurement value
+Relying on a pseudo-measurement and the real measurement: can we trust the pseudo measurement 
+(=”weight”)?
+• In each step, we get a new set of particles
+We sample from set of moved particles
+Each particle has the probability ∝weight to be chosen
+
+--- PAGE 15 ---
+Particle Filters for Mobile Robots
+PRO | Lucas Muster | 29.04.2025
+15
+• Initial guess using set of particles: 𝜒𝑡=
+Ԧ𝑥𝑡
+[1], … , Ԧ𝑥𝑡
+[𝑀]
+• We use ”particles” to 
+• estimate 𝑏𝑒𝑙Ԧ𝑥𝑡by sampling from p(xt|ut,xt−1)
+• estimate 𝑏𝑒𝑙( Ԧ𝑥𝑡) using re-sampling
+Calculate weight factor 𝑤𝑡
+[𝑚] for each particle using 𝑝
+Ԧ𝑧𝑡| Ԧ𝑥𝑡
+[𝑚]
+Generate new set of particles based on weights 
+• Re-sampling is reason for success of MCL
+
+--- PAGE 16 ---
+Particle Filter: Re-Sampling
+PRO | Lucas Muster | 29.04.2025
+16
+• Step 1: Get 𝑏𝑒𝑙Ԧ𝑥𝑡
+• ”Move” each particle using motion model
+• Get ”weight” for each moved particle using measurement model
+• ”Moved” set of particles: ҧ𝜒𝑡
+• Step 2: Get 𝑏𝑒𝑙( Ԧ𝑥𝑡)
+• Draw M particles from set ҧ𝜒𝑡
+• Draw with replacement
+• Draw probability ∝weight
+• Procedure is known as re-sampling or importance sampling
+
+--- PAGE 17 ---
+Particle Filter: The Algorithm
+PRO | Lucas Muster | 29.04.2025
+17
+• Extension of Bayes filter 
+• Can approximate almost any distribution 
+• Easy to implement 
+• Accuracy is based on number of particles 
+• Again: Algorithm is a concept
+• Missing motion model
+• Missing measurement model 
+• Next step: Implementation for mobile robot
+
+--- PAGE 18 ---
+Particle Filter: The Algorithm
+PRO | Lucas Muster | 29.04.2025
+18
+• Line 3-7: Implements step 1 on slide 54. 
+• Line 8-11: Implements step 2 of slide 16. Note: This algorithm works for 
+localization with and without a map (dead reckoning localization).
+
+--- PAGE 19 ---
+Particle Filter: The Algorithm
+PRO | Lucas Muster | 29.04.2025
+19
+• Need to implement motion and measurement model 
+• Motion model
+• Need to sample from 𝑝Ԧ𝑥𝑡| Ԧ𝑥𝑡−1, 𝑢𝑡
+• Many implementations
+• Simple implementation: Using odometry and add random noise 
+• Measurement model
+• Need to evaluate particle using 𝑝Ԧ𝑧𝑡| Ԧ𝑥𝑡
+• Evaluation is weight of particle
+• Store weight and moved particle
+
+--- PAGE 20 ---
+Particle Filter: Motion Models
+PRO | Lucas Muster | 29.04.2025
+20
+• We need algorithm to sample motion 
+• Easiest approach (see figure)
+• Using odometry
+• Add random Gaussian noise (µ𝑁= 0 and 𝜎𝑇is a tuning factor)
+Figure: Motion sampling using three different noise settings (Thrun, 2006). Note, that there is noise for translation and rotation.
+
+--- PAGE 21 ---
+Particle Filter: Motion Models
+PRO | Lucas Muster | 29.04.2025
+21
+Figure: Motion model in application (Thrun, 2006). Note, that the solid line represents the actual movement.
+
+--- PAGE 22 ---
+Particle Filter: Final algorithm
+PRO | Lucas Muster | 29.04.2025
+22
+Figure: The Monte Carlo Localization algorithm (Thrun, 2006).
+
+--- PAGE 23 ---
+Particle Filter: Summary
+PRO | Lucas Muster | 29.04.2025
+23
+• Can handle non-gaussian noise 
+• No restrictions concerning posterior 
+• This algorithm
+• cannot deal with dynamic environment
+• is restricted due to motion model (odometry and gaussian noise) 
+• Existing extensions to overcome those problems 
+• We can now recover from failures 
+• Alternative: Grid methods
+
+--- PAGE 24 ---
+Particle Filter: Comparison of Approaches
+PRO | Lucas Muster | 29.04.2025
+24
+Figure: Comparison of localization algorithms (Thrun, 2006). MHT is short for multi hypothesis tracking (e.g.: a Gaussian mixture model). 
+Note, the coarse grid and fine grid are not discussed in this course.: The Monte Carlo Localization algorithm (Thrun, 2006).
+
+--- PAGE 25 ---
+Probabilistic Robotics
+Particle Filter
+Lucas Muster, MSc
+
+=== FILE: sensor_motion | Pages: 19 ===
+--- PAGE 1 ---
+Probabilistic Robotics
+Sensor & Motion Model
+Lucas Muster, MSc
+
+--- PAGE 2 ---
+The Problem so far
+• We assumed a lot of things 
+•
+The linear motion is Ԧ𝑥𝑡= 𝐴Ԧ𝑥𝑡+ 𝐵𝑢𝑡
+(Similar problems in the EKF) 
+•
+Linear sensor model: 𝐶Ԧ𝑥𝑡
+∗
+•
+…
+• But until now we have not... 
+... used real sensor noise. 
+We applied a general statistical model to describe the sensor’s uncertainty. Again, the uncertainty calculation is strongly connected to 
+the kind of sensor. 
+... used the real kinematic model. 
+The uncertainty using Σ𝑡describes a general motion and not a motion of a real mobile robot. The wheel motion is noisy. This noise has 
+to be ”moved” through the kinematic model. So, what we need to do is implementing sensor and motion models for real hardware.
+So, what we need to do is implementing sensor and motion models for real hardware. 
+PRO | Lucas Muster | 29.04.2026
+2
+
+--- PAGE 3 ---
+How to Overcome the Problem?
+• Sensor model 
+• We will describe the sensor behavior
+• In this lecture, range finder (2D scanner) 
+• Motion model
+• We describe noise where it belongs (wheels) 
+• The effect of the noise is analyzed using a kinematic model
+• Remember the integrals? We need to solve them...
+PRO | Lucas Muster | 29.04.2026
+3
+
+--- PAGE 4 ---
+Sensor Models - Range finder
+• The uncertainty of the scan must be 
+evaluated
+• We distinguish
+• 2D scan (n distance and angle pairs)
+• Pre-processed scan data (distance and 
+angle to landmark(s) ) 
+PRO | Lucas Muster | 29.04.2026
+4
+
+--- PAGE 5 ---
+Sensor Models - Range finder
+• We want to model 𝑝(𝑧𝑡
+𝑘| Ԧ𝑥𝑚, 𝑚)
+• What uncertainty needs to be considered?
+• Hit: The value of the scan (=range) is noisy: 𝜖ℎ𝑖𝑡~ 𝑁(0, 𝜎ℎ𝑖𝑡)
+• Random hit: The probability of a random hit is modelled U(0, 𝜎ℎ𝑖𝑡)
+• Max. val: The maximum value must be modeled anyhow. Thus if the range 
+𝑧𝑡
+𝑘is 𝑧𝑚𝑎𝑥, we set 𝑝𝑧𝑡
+𝑘= 𝑧𝑚𝑎𝑥Ԧ𝑥𝑚, 𝑚= 1
+• 𝑝(𝑧𝑡
+𝑘| Ԧ𝑥𝑚, 𝑚) is modelled using 𝑝ℎ𝑖𝑡,𝑝𝑟𝑎𝑛𝑑𝑜𝑚and 𝑝𝑚𝑎𝑥
+• For this, we introduce mixing parameters 𝑧ℎ𝑖𝑡,𝑧𝑟𝑎𝑛𝑑𝑜𝑚and 𝑧𝑚𝑎𝑥
+• These mixing parameters can be learned
+PRO | Lucas Muster | 29.04.2026
+5
+
+--- PAGE 6 ---
+Likelihood Fields for Range Finders
+• We now derive an algorithm to model 𝑝(𝑧𝑡
+𝑘| Ԧ𝑥𝑚, 𝑚)
+• Initially, we describe the scan in the world frame
+• This is done for each beam 
+• We use Ԧ𝑥, 𝑚and Ԧ𝑧𝑡as inputs
+• Each scan gives a set of k range-angle pairs: 𝑧𝑡
+𝑘and θ𝑘,𝑠𝑒𝑛𝑠
+• The sensor is mounted on (x𝑘,𝑠𝑒𝑛𝑠, y𝑘,𝑠𝑒𝑛𝑠)𝑇in the robots frame 
+• We convert each beam using
+PRO | Lucas Muster | 29.04.2026
+6
+
+--- PAGE 7 ---
+Likelihood Fields for Range Finders
+• (x𝑧𝑡
+𝑘, y𝑧𝑡
+𝑘)𝑇is investigated (We see if those values make sense using 
+the robot’s pose and the map)
+• We check each bean and use 𝑝Ԧ𝑧𝑡Ԧ𝑥𝑚, 𝑚= ς 𝑝(𝑧𝑡
+𝑘| Ԧ𝑥𝑚, 𝑚)
+Note before we check the algorithm:
+(x𝑧𝑡
+𝑘, y𝑧𝑡
+𝑘)𝑇are numerical values coming from the scan. However, these values will 
+typically not be the same as the map centers. Thus, we need to find the cell next to the 
+calculated positions in the world frame. This is done by simply using the closest cell. We 
+evaluate, how good the sensor data fits the current map and pose! 
+PRO | Lucas Muster | 29.04.2026
+7
+
+--- PAGE 8 ---
+Likelihood Fields for Range Finders
+Line 2: Inits the probability which will be returned 
+Line 3: For loop over all beams in 𝑧𝑡
+Line 4: Checks if beam is valid 
+PRO | Lucas Muster | 29.04.2026
+8
+
+--- PAGE 9 ---
+Likelihood Fields for Range Finders
+Line 5,6: Calculates the beam’s global coordinates 
+Line 7: Gets the closest cell to the calculated beam position (yes, its the 
+square root) 
+Line 8: Applies our probabilistic model. prob is our zero-mean Gaussian.
+PRO | Lucas Muster | 29.04.2026
+9
+
+--- PAGE 10 ---
+Likelihood Fields for Range Finders
+• This is rather complicated and computational expensive
+• Note, we can calculate all possible values before the application. We 
+can create a lookup-table. 
+• However, we can pre-process the scan! 
+• We can extract ”landmarks” from the scan and simplify the algorithm 
+For example, we can use the scan to locate a cylinder. Thus we can use 
+the cylinders position and a map. Then, all other beams can be ignored. 
+Note: We must know the correspondence! 
+PRO | Lucas Muster | 29.04.2026
+10
+
+--- PAGE 11 ---
+Landmark model
+• A landmark is detected in the scan 
+• This landmark needs to be described in the 
+world frame. 
+• Initially, we will calculate pseudo sensor 
+messages based on the map and the robot’s 
+pose. 
+• Afterwards, we ”compare” those values to the 
+true measurement.
+PRO | Lucas Muster | 29.04.2026
+11
+
+--- PAGE 12 ---
+Landmark model
+Each ”sensor value” is here described using Ԧ𝑓𝑡
+𝑖= (𝑟𝑡
+𝑖, 𝜙𝑡
+𝑖, Ԧ𝑠𝑡
+𝑖)𝑇
+Line 2: We get the correspondence (Please see EKF Localization) 
+Line 3,4: We get a pseudo range and angle from the map and the Ԧ𝑥𝑡
+Line 5: Similarly, we evaluate the differences in the range, angle and signature using 
+a distribution (e.g.: a Gaussian). 
+PRO | Lucas Muster | 29.04.2026
+12
+
+--- PAGE 13 ---
+Motion Models for Mobile Robots
+• We analyse the motion of a simple robot
+• The robot moves in circular pattern
+• The circle’s center is the ICC or ICR (instantaneous center of 
+curvature/rotation)
+• But before we get a probabilistic motion model, we calculate our motion 
+equations 
+PRO | Lucas Muster | 29.04.2026
+13
+
+--- PAGE 14 ---
+Motion Models for Mobile Robots
+• From basic physics we know
+𝑣= 𝑟∗𝜔→𝑟= 𝑣
+𝜔
+• Using that to get the ICC‘s position
+𝑥𝐼𝐶𝐶
+𝑦𝐼𝐶𝐶
+= 𝑥𝑡
+𝑦𝑡+ 𝑣
+𝜔
+−sin(𝜃)
+cos(𝜃)
+• And finally
+Ԧ𝑥𝑡+1 =
+𝑥𝐼𝐶𝐶+ 𝑣
+𝜔sin(𝜃𝑡+ 𝜔Δ𝑡)
+𝑦𝐼𝐶𝐶−𝑣
+𝜔cos(𝜃𝑡+ 𝜔Δ𝑡)
+𝜃+ 𝜔Δ𝑡
+=
+𝑥𝑡
+𝑦𝑡
+𝜃𝑡
++
+−𝑣
+𝜔sin(𝜃𝑡) + 𝑣
+𝜔sin(𝜃𝑡+ 𝜔Δ𝑡)
+𝑣
+𝜔cos(𝜃𝑡) −𝑣
+𝜔cos(𝜃𝑡+ 𝜔Δ𝑡)
+𝜃+ 𝜔Δ𝑡
+PRO | Lucas Muster | 29.04.2026
+14
+
+--- PAGE 15 ---
+Motion Models for Mobile Robots
+• Where can ”uncertainty” occur?
+• Slippage and sliding introduces noise in v and ω
+• There is maybe noise at the wheel encoders 
+→ So we can maybe describe the ”noise” at the wheels and ICC 
+Remember, we need a pdf for our filters: 
+How can we calculate the robot’s pdf using the wheel noise? 
+PRO | Lucas Muster | 29.04.2026
+15
+
+--- PAGE 16 ---
+Motion Models for Mobile Robots
+• Where can ”uncertainty” occur?
+• Slippage and sliding introduces noise in v and ω
+• There is maybe noise at the wheel encoders 
+→ So we can maybe describe the ”noise” at the wheels and ICC 
+Remember, we need a pdf for our filters: 
+How can we calculate the robot’s pdf using the wheel noise? 
+PRO | Lucas Muster | 29.04.2026
+16
+
+--- PAGE 17 ---
+Motion Models for Mobile Robots
+• Let us simulate the pdf using different noise settings
+• It is hard to implement these pdf. How to calibrate? 
+• There exist a statistical toolbox for those kinds of problems: 
+• Markov chain Monte Carlo (MCMC)
+• Instead of calculating parameters (µ or Σ), we sample and evaluate the samples 
+We will now sample from the kinematic model This is a hard statistical method. 
+We keep it simple. If you want to know more, please see (Bishop, 2006) 
+PRO | Lucas Muster | 29.04.2026
+17
+
+--- PAGE 18 ---
+Motion Models for Mobile Robots
+• We sample from the kinematic model (red dots)
+• Each sample is a pose-hypothesis 
+• We need to formulate 𝐷, a sampling function
+PRO | Lucas Muster | 29.04.2026
+18
+
+--- PAGE 19 ---
+Motion Models for Mobile Robots
+• Line 2,3: Use signal of Ԧ𝑥𝑡+1 =
+𝑣
+𝜔𝑇and add random number 
+• Line 4: Additional rotation noise 
+• Line 5-7: Apply kinematic model using noisy data 
+PRO | Lucas Muster | 29.04.2026
+19
+

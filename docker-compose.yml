@@ -1,0 +1,129 @@
+services:
+
+  # ── Run all filters with real TurtleBot4 / external IMU source ────────────
+  filters:
+    build:
+      context: .
+      target: runtime
+    image: prol_filters:humble
+    network_mode: host
+    working_dir: /data            # CSVs (kf_log.csv etc.) land here
+    environment:
+      - ROS_DOMAIN_ID=0
+      - DISPLAY=${DISPLAY:-:0}
+    volumes:
+      - ./data:/data
+      - /tmp/.X11-unix:/tmp/.X11-unix:ro
+    command: >
+      ros2 launch prol_filters filters.launch.py
+      log_csv:=true
+      use_rviz:=true
+
+  # ── Single-node services (with RViz on host) ──────────────────────────────
+  kf:
+    build:
+      context: .
+      target: runtime
+    image: prol_filters:humble
+    network_mode: host
+    working_dir: /data
+    environment:
+      - ROS_DOMAIN_ID=0
+    volumes:
+      - ./data:/data
+    command: ros2 run prol_filters kalman_filter_node
+    profiles: ["kf"]
+
+  ekf:
+    build:
+      context: .
+      target: runtime
+    image: prol_filters:humble
+    network_mode: host
+    working_dir: /data
+    environment:
+      - ROS_DOMAIN_ID=0
+    volumes:
+      - ./data:/data
+    command: ros2 run prol_filters ekf_node
+    profiles: ["ekf"]
+
+  pf:
+    build:
+      context: .
+      target: runtime
+    image: prol_filters:humble
+    network_mode: host
+    working_dir: /data
+    environment:
+      - ROS_DOMAIN_ID=0
+    volumes:
+      - ./data:/data
+    command: ros2 run prol_filters particle_filter_node
+    profiles: ["pf"]
+
+  # ── Interactive simulation with RViz (sim + filters + RViz, runs forever) ──
+  # Single command: docker compose up simulation
+  # Requires X11 display (WSL2 with WSLg on Windows, or Linux desktop).
+  simulation:
+    build:
+      context: .
+      target: runtime
+    image: prol_filters:humble
+    network_mode: host
+    working_dir: /data
+    environment:
+      - ROS_DOMAIN_ID=0
+      - DISPLAY=${DISPLAY:-:0}
+      - LIBGL_ALWAYS_SOFTWARE=1
+      - MESA_GL_VERSION_OVERRIDE=3.3
+      - MESA_GLSL_VERSION_OVERRIDE=330
+      - QT_X11_NO_MITSHM=1
+    volumes:
+      - ./data:/data
+      - /tmp/.X11-unix:/tmp/.X11-unix:ro
+    command: >
+      ros2 launch prol_filters simulation.launch.py
+      trajectory:=circle
+      duration:=3600.0
+      use_rviz:=true
+
+  # ── Experiment runner (sim + all filters, auto-exits after duration) ───────
+  # Used by run_experiments.sh — override the command to pass args.
+  experiment:
+    build:
+      context: .
+      target: runtime
+    image: prol_filters:humble
+    network_mode: host
+    working_dir: /data
+    environment:
+      - ROS_DOMAIN_ID=0
+    volumes:
+      - ./data:/data
+    command: ros2 launch prol_filters experiment.launch.py
+
+  # ── Post-processing ────────────────────────────────────────────────────────
+  plot:
+    build:
+      context: .
+      target: runtime
+    image: prol_filters:humble
+    volumes:
+      - ./data:/data
+    command: >
+      python3 /ros2_ws/install/prol_filters/lib/prol_filters/plot_results.py
+      --data-dir /data --out-dir /data/plots
+    profiles: ["plot"]
+
+  evaluate:
+    build:
+      context: .
+      target: runtime
+    image: prol_filters:humble
+    volumes:
+      - ./data:/data
+    command: >
+      python3 /ros2_ws/install/prol_filters/lib/prol_filters/evaluate_filters.py
+      --data-dir /data
+    profiles: ["evaluate"]

@@ -1,0 +1,16 @@
+[INFO] [launch]: All log files can be found below /root/.ros/log/2026-06-14-08-48-49-545358-DESKTOP-T4E25U4-36
+[INFO] [launch]: Default logging verbosity is set to INFO
+[INFO] [imu_simulator.py-1]: process started with pid [37]
+[INFO] [map_publisher_node-2]: process started with pid [39]
+[INFO] [kf_elias_node-3]: process started with pid [41]
+[INFO] [ekf_elias_node-4]: process started with pid [43]
+[INFO] [pf_elias_node-5]: process started with pid [45]
+[ekf_elias_node-4] [INFO] [1781426929.643207996] [ekf_elias_node]: EKF (Elias unicycle) ready | v=0.40 lm=(1.80,3.00) r=6.00
+[map_publisher_node-2] [INFO] [1781426929.647702354] [map_publisher]: map_publisher: /map 112x103 @ 0.050 m/px
+[kf_elias_node-3] [INFO] [1781426929.658863988] [kf_elias_node]: KF (Elias 6D-CV) ready | v=0.40 lm=(1.80,3.00) r=6.00
+[pf_elias_node-5] [INFO] [1781426929.666302345] [pf_elias_node]: PF (Elias MCL) ready | N=500 v=0.40 lm=(1.80,3.00)
+[imu_simulator.py-1] [0m[INFO] [1781426930.060896940] [imu_simulator]: Waypoint path built: 321 samples, length 6.26 m[0m
+[imu_simulator.py-1] [0m[INFO] [1781426930.090192582] [imu_simulator]: Map loaded: 112×103 @ 0.05m/px  (706 occupied cells)[0m
+[imu_simulator.py-1] [0m[INFO] [1781426930.090727400] [imu_simulator]: IMU simulator started: trajectory=waypoints  duration=0.0s  rate=50Hz  v=0.40m/s  ω=0.50rad/s[0m
+[imu_simulator.py-1] [0m[INFO] [1781426946.311143751] [imu_simulator]: Waypoint path complete — shutting down.[0m
+[INFO] [imu_simulator.py-1]: process has finished cleanly [pid 37]

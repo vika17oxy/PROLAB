@@ -1,0 +1,108 @@
+Panels:
+  - Class: rviz_common/Displays
+    Name: Displays
+  - Class: rviz_common/Views
+    Name: Views
+
+Visualization Manager:
+  Class: ""
+  Displays:
+
+    # ── Occupancy-grid map (our map.yaml, published on /map) ─────────────────
+    - Class: rviz_default_plugins/Map
+      Name: OccMap
+      Topic:
+        Value: /map
+      Color Scheme: map
+      Alpha: 0.7
+      Value: true
+
+    # ── Static map (CUBE_LIST Marker — occupied cells as grey cubes) ─────────
+    - Class: rviz_default_plugins/Marker
+      Name: Map
+      Topic: /map_marker
+      Value: true
+
+    # ── Grid (floor) ─────────────────────────────────────────────────────────
+    - Alpha: 0.15
+      Cell Size: 0.5
+      Class: rviz_default_plugins/Grid
+      Color: 60; 60; 60
+      Name: Grid
+      Plane Cell Count: 30
+      Value: true
+
+    # ── Robot body (ground truth pose, yellow cylinder) ───────────────────────
+    - Class: rviz_default_plugins/Marker
+      Name: Robot
+      Topic: /robot_marker
+      Value: true
+
+    # ── Ground truth trajectory (grey arrows, full trail) ────────────────────
+    - Class: rviz_default_plugins/Odometry
+      Name: GroundTruth
+      Topic: /ground_truth
+      Shape: Arrow
+      Color: 180; 180; 180
+      Keep: 2000
+      Value: true
+
+    # ── EKF: current pose + covariance ellipse (blue) ─────────────────────────
+    - Class: rviz_default_plugins/PoseWithCovariance
+      Name: EKF_Pose
+      Topic: /ekf/pose
+      Color: 50; 150; 255
+      Value: true
+
+    # ── PF: current pose + covariance ellipse (green) ─────────────────────────
+    - Class: rviz_default_plugins/PoseWithCovariance
+      Name: PF_Pose
+      Topic: /pf/pose
+      Color: 50; 220; 100
+      Value: true
+
+    # ── Particle cloud ────────────────────────────────────────────────────────
+    - Class: rviz_default_plugins/MarkerArray
+      Name: PF_Particles
+      Topic: /pf/particles
+      Value: true
+
+    # ── Landmark markers ──────────────────────────────────────────────────────
+    - Class: rviz_default_plugins/Marker
+      Name: EKF_Landmark
+      Topic: /ekf/landmark_marker
+      Value: true
+
+    - Class: rviz_default_plugins/Marker
+      Name: PF_Landmark
+      Topic: /pf/landmark_marker
+      Value: true
+
+    # ── Delay status labels ───────────────────────────────────────────────────
+    - Class: rviz_default_plugins/Marker
+      Name: KF_DelayStatus
+      Topic: /kf/delay_status
+      Value: true
+
+    - Class: rviz_default_plugins/Marker
+      Name: EKF_DelayStatus
+      Topic: /ekf/delay_status
+      Value: true
+
+    - Class: rviz_default_plugins/Marker
+      Name: PF_DelayStatus
+      Topic: /pf/delay_status
+      Value: true
+
+  Global Options:
+    Background Color: 15; 15; 25
+    Fixed Frame: map
+    Frame Rate: 30
+
+  Views:
+    Current:
+      Class: rviz_default_plugins/TopDownOrtho
+      Scale: 130
+      X: 1.84
+      Y: 0.5
+      Name: TopDown

@@ -1,0 +1,22 @@
+[INFO] [launch]: All log files can be found below /root/.ros/log/2026-06-14-08-43-38-062314-DESKTOP-T4E25U4-37
+[INFO] [launch]: Default logging verbosity is set to INFO
+[INFO] [imu_simulator.py-1]: process started with pid [38]
+[INFO] [map_publisher_node-2]: process started with pid [40]
+[INFO] [kf_elias_node-3]: process started with pid [42]
+[INFO] [ekf_elias_node-4]: process started with pid [44]
+[INFO] [pf_elias_node-5]: process started with pid [46]
+[map_publisher_node-2] [INFO] [1781426618.145007801] [map_publisher]: map_publisher: /map 112x103 @ 0.050 m/px
+[pf_elias_node-5] terminate called after throwing an instance of 'rclcpp::exceptions::InvalidParameterTypeException'
+[pf_elias_node-5]   what():  parameter 'measurement_delay_ms' has invalid type: Wrong parameter type, parameter {measurement_delay_ms} is of type {double}, setting it to {integer} is not allowed.
+[ekf_elias_node-4] terminate called after throwing an instance of 'rclcpp::exceptions::InvalidParameterTypeException'
+[ekf_elias_node-4]   what():  parameter 'measurement_delay_ms' has invalid type: Wrong parameter type, parameter {measurement_delay_ms} is of type {double}, setting it to {integer} is not allowed.
+[kf_elias_node-3] terminate called after throwing an instance of 'rclcpp::exceptions::InvalidParameterTypeException'
+[kf_elias_node-3]   what():  parameter 'measurement_delay_ms' has invalid type: Wrong parameter type, parameter {measurement_delay_ms} is of type {double}, setting it to {integer} is not allowed.
+[imu_simulator.py-1] [0m[INFO] [1781426618.569183998] [imu_simulator]: Waypoint path built: 321 samples, length 6.26 m[0m
+[imu_simulator.py-1] [0m[INFO] [1781426618.597450048] [imu_simulator]: Map loaded: 112×103 @ 0.05m/px  (706 occupied cells)[0m
+[imu_simulator.py-1] [0m[INFO] [1781426618.598081283] [imu_simulator]: IMU simulator started: trajectory=waypoints  duration=0.0s  rate=50Hz  v=0.40m/s  ω=0.50rad/s[0m
+[ERROR] [pf_elias_node-5]: process has died [pid 46, exit code -6, cmd '/ros2_ws/install/prol_filters/lib/prol_filters/pf_elias_node --ros-args -r __node:=pf_elias_node --params-file /tmp/launch_params_0tbeiesm --params-file /tmp/launch_params_weg9b4x_'].
+[ERROR] [ekf_elias_node-4]: process has died [pid 44, exit code -6, cmd '/ros2_ws/install/prol_filters/lib/prol_filters/ekf_elias_node --ros-args -r __node:=ekf_elias_node --params-file /tmp/launch_params_jezuk_jl'].
+[ERROR] [kf_elias_node-3]: process has died [pid 42, exit code -6, cmd '/ros2_ws/install/prol_filters/lib/prol_filters/kf_elias_node --ros-args -r __node:=kf_elias_node --params-file /tmp/launch_params_a2b5o57l'].
+[imu_simulator.py-1] [0m[INFO] [1781426634.278880642] [imu_simulator]: Waypoint path complete — shutting down.[0m
+[INFO] [imu_simulator.py-1]: process has finished cleanly [pid 38]

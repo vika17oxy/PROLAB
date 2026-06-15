@@ -1,0 +1,945 @@
+﻿Pages: 81
+--- PAGE 1 ---
+Probabilistic Robotics
+Basic Introduction
+Lucas Muster, MSc
+
+--- PAGE 2 ---
+Introducing Probabilistic Robotics
+• Organisation of this course
+• PRO and PRO Lab
+• Some definitions
+• Motivation: Why do we use statistics? 
+• Notation: Vectors, matrices and distributions
+• Basic math understandings
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+2
+
+--- PAGE 3 ---
+Organisation of this course
+• 100% Theory Exam
+• Practical implementation will be in the Lab
+• Open Questions
+• No learning by heart - understanding the algorithm is tested
+• Grading Scale:
+• Excellent (Grade 1):
+90–100%
+• Good (Grade 2):
+80–89%
+• Satisfactory (Grade 3):
+70–79%
+• Sufficient (Grade 4):
+60–69%
+• Insufficient (Grade 5): Below 60% in either component → repetition required
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+3
+
+--- PAGE 4 ---
+PRO and PRO Lab
+• Probabilistic Robotics
+• 5 classes 
+• Exam
+• Preparation for the Lab
+• Probabilistic Robotics Lab
+• Implementation of localization algorithms in ROS
+• Project submission
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+4
+
+--- PAGE 5 ---
+Literature
+• Introduction to Autonomous Mobile Robots 
+ 
+Roland Siegwart, Illah Nourbakhsh, and Davide Scaramuzza 
+• Probabilistic Robotics 
+Sebastian Thrun, Wolfram Burgard, and Dieter Fox 
+• Pattern Recognition and Machine Learning 
+ 
+Christopher M. Bishop
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+5
+
+--- PAGE 6 ---
+Structure of a Mobile Robot: Software
+• How to program these robots?
+• C/C++: Control in real-time
+• Python: Modelling
+• Matlab: Toolboxes
+• ROS and ROS2: Robot operating system
+−Easy communication
+−Ready-to-use software
+• Docker: Containerized Setup
+• NVIDIA: GPU acceleration 
+– Deep Learning 
+– Auton. driving toolbox
+→Again: Depending on the application of the mobile robot
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+6
+Picture Source: https://isocpp.org/
+Picture Source: https://www.python.org/
+Picture Source: https://de.mathworks.com/products/matlab.html
+Picture Source: https://www.ros.org/
+Picture Source: https://www.docker.com/
+Picture Source: https://www.nvidia.com/de-at/
+
+--- PAGE 7 ---
+Introduction to ROS2
+• Robot Operating System (ROS) is a flexible and open-source framework 
+for developing robot application and systems.
+• Defines components, interfaces and tools for building advanced robots.
+• Standard software platform for developers.
+• It plays a pivotal role in advancing robotics by simplifying development, 
+fostering collaboration, and enabling rapid prototyping and testing.
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+7
+Picture Source: https://www.ros.org/
+
+--- PAGE 8 ---
+Why do we use ROS?
+• Fast prototyping in simulated worlds
+• Open source packages
+• Abstract Communication
+• Nodes
+• Messages
+• Multi-Language Support
+• C/C++, Python, …
+• Matlab, R
+• Debugging and visualization tools
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+8
+https://gazebosim.org/home
+https://moveit.picknik.ai/main/index.html
+http://wiki.ros.org/rviz
+
+--- PAGE 9 ---
+Motivation
+• Our Robot stands at റ𝑥𝑡= 𝑥𝑡
+𝑦𝑡
+𝜃𝑡𝑇
+• Two wheels move – where am I after ∆𝑡?
+→We will drive in circular pattern
+• Yes, there is software for mobile robot localization (it is ROS), but…
+• Different to industrial robotics – we integrate over time (in industrial robotics, we have absolute values)
+• There is noise →we must use sensor fusion to minimize the influence of noise
+• This leads to machine learning
+• Mobile robotics part: Learning the robot pose from data & reasoning over time
+• This leads to the Bayes filter
+• We focus on particle filters
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+9
+
+--- PAGE 10 ---
+Why do we use ROS?
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+10
+https://docs.ros.org/en/foxy/How-To-Guides/Visualizing-ROS-2-Data-With-Foxglove-Studio.html
+https://docs.ros.org/en/jazzy/How-To-Guides/Visualizing-ROS-2-Data-With-Foxglove-Studio.html
+https://github.com/IntelRealSense/realsense-ros
+https://discourse.ros.org/t/new-ros-online-courses-gazebo-simulator-intermediate-ros2-tf-ros2/26774
+https://discourse.ros.org/t/new-ros-online-courses-gazebo-simulator-intermediate-ros2-tf-ros2/26774
+
+--- PAGE 11 ---
+Motivation
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+11
+
+--- PAGE 12 ---
+Some Definitions: Sensors
+• Analysis of the environment
+• Infer own motion
+• Reasing is necessary (sensor data to physical interpretation)
+• Fusion of information sources
+• Why? Minimize impact of noise
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+12
+Figure 4: From left to right. Sick 3D Laserscanner, Intel Realsense, Olive IMU, Nema 34 Stepper Motor with encoder [2]
+[2] Picture Source: https://www.sick.com/at/de/catalog/produkte/safety/sicherheitslaserscanner/s3000-remote/c/g187232 , 
+https://www.intel.de/content/www/de/de/architecture-and-technology/realsense-overview.html , https://olive-robotics.com/olixsense-imu-x1/
+ and https://www.rta-deutschland.de/de/product/2492-schrittmotoren-mit-encoder-em-3f3h-04s0
+
+--- PAGE 13 ---
+Some Definitions: Perception
+• Processing of sensor data
+• External sensors
+• Usage of external information from environment
+• 2D/3D Laser Scanner
+• Imaging Sensor (RGB,  NIR or TIR Camera)
+• Etc…
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+13
+Figure 6: 3D Mapping of the Tritolwerk in Lower Austria (a) and the Atomic Power Plant Zwentendorf (b) and (c) (Schwaiger, 2024)
+[3] Picture Source: https://www.sick.com/at/de/catalog/produkte/safety/sicherheitslaserscanner/s3000-remote/c/g187232
+ and https://www.intel.de/content/www/de/de/architecture-and-technology/realsense-overview.html
+Figure 5: Example of external sensors. Left: Sick 3D Laserscanner, 
+Right: Intel Realsense [3]
+
+--- PAGE 14 ---
+Some Definitions: Perception
+• Processing of sensor data
+• Internal Sensors
+• Measuring Information “inside“ the robot
+• Odometry (wheel motion to robot motion)
+• IMU (Inertial Measurment Unit)
+• Etc…
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+14
+Robot 
+Odometry
+Figure 7: Visualization of Robot Movement (Odometry) around radioactive 
+source at the Tritolwerk in Lower Austria (top) and the Atomic Power Plant 
+Zwentendorf (bottom) (Schwaiger, 2024)
+Figure 8: Example of internal sensors. Left: Olive IMU, Right: Nema 34 Stepper Motor with encoder [3]
+[2] Picture Source: https://olive-robotics.com/olixsense-imu-x1/
+ and https://www.rta-deutschland.de/de/product/2492-schrittmotoren-mit-encoder-em-3f3h-04s0
+
+--- PAGE 15 ---
+Some Definitions: Mapping
+• Creates a 2D/3D representation of the world using sensor data
+• This map is then used for localization and planning
+• Current research topic: Simultaneous localization and mapping (SLAM) 
+• Fuse Mapping and Localization
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+15
+Figure 9: Mapping Example with ROS2 and Nav2 (Macenski, 2023)
+
+--- PAGE 16 ---
+Some Definitions: Planning
+• Plan motion and path to achieve ”goal”
+• A path is a sequence of poses
+• We need models for planning
+• Motion models (Kinematics) 
+• Sensor models (Interpretation of sensor data)
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+16
+Picture Source: http://wiki.ros.org/navigation 
+Figure 10: Matlab example for Autonomous Navigation for Mobile Robots and UGV [3]
+[3] Picture Source: https://de.mathworks.com/matlabcentral/fileexchange/95998-autonomous-navigation-for-mobile-robots-and-ugv?s_tid=FX_rc3_behav
+
+--- PAGE 17 ---
+Sensor Technology: Odometry
+• Increment motion over time
+• Typically based on angular sensors
+• Based on wheel motion, we can calculate robot motion
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+17
+Figure 13: The new pose is based on the wheel motion and a robot model (Siegwart, 2004). 
+The pose of the robot is described in a global frame.
+
+--- PAGE 18 ---
+Sensor Technology: IMU
+• Inertial Measurement Unit 
+• Linear acceleration and angular velocity
+• Often as a quaternion-based representations
+• Connected to a specific frame (typically, we must transform it)
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+18
+Figure 14: Olive olixSense IMU [5]
+[5] Picture Source: https://olive-robotics.com/olixsense-imu-x1/
+
+--- PAGE 19 ---
+Sensor Technology: 1D Distance Sensor
+• Sensor principle: Ultrasonic or Infra-red
+• Note: Reflections and interferences are a huge problem
+• Limited in range
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+19
+Figure 15: Left: Ultrasonic Distance Sensor, Right: IR Sensor [6]
+[6] Picture Source: https://www.sparkfun.com/ultrasonic-distance-sensor-hc-sr04.html and 
+https://projecthub.arduino.cc/aboda243/obstacle-detector-using-ir-module-tutorial-101320 
+
+--- PAGE 20 ---
+Sensor Technology: Laserscanner
+• Typically, the default sensor
+• 2D or 3D
+• Interpretation: Distance measure including angle
+• Fog and glass are real-life problems
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+20
+Figure 16: 3D Laserscanner Sick (top) and the Livox MID-360 Laserscanner (bottom) [7] 
+[7]: Picture Source: https://www.livoxtech.com/mid-360
+and https://www.sick.com/at/de/catalog/produkte/safety/sicherheitslaserscanner/s3000-remote/c/g187232
+
+--- PAGE 21 ---
+Sensor Technology: Camera
+• Available in different wavelengths: visible or near/far infra red
+• Based on machine vision and learning, robots can ”see”
+• Different types of cameras
+• Stereo Camera
+• Depth Camera
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+21
+Figure 17: Left: Object detector using Yolo11, Right: ROS rtmap_ros Package [8]
+[8] Picture Source: https://learnopencv.com/yolo11/ , http://wiki.ros.org/rtabmap_ros
+and https://www.quanser.com/blog/autonomous-systems/real-time-appearance-based-mapping-using-ros-and-an-rgbd-camera/
+
+--- PAGE 22 ---
+Sensor Technology: GPS/GNSS
+• GNSS = GPS, Galileo, GLONASS, BeiDou
+• Provides global positioning for outdoor navigation
+• Used for waypoint tracking, SLAM, and global 
+localization
+• Limitations: low rate, signal loss, multipath effects
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+22
+Figure 18: LORD Sensing 3DM-GX5 (IMU + GNSS) [9]
+[9] Picture Source: https://store.clearpathrobotics.com/products/3dm-gx5-35
+
+--- PAGE 23 ---
+Motivation
+• Traditional methods are restricted
+• Real environment is hard to formalize
+• Interaction with humans →perception/understanding
+• For full automation →intelligent systems are needed
+• How to decide in uncertainty?
+• But,…
+• do we want intelligent robots? 
+• where do we need AI-driven robots?
+• can we trust these machines? (see clever Hans)
+• can we generate robots for daily life? (see no-free-lunch theorem)
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+23
+
+--- PAGE 24 ---
+Figure 3: “Control loop” for mobile robotics (Siegwart,2004)
+Some Definitions 
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+24
+
+--- PAGE 25 ---
+Dealing with Disturbances
+Every real-world mobile robot is subject to uncertainties — both external 
+disturbances and internal sensor noise. A robust control system must detect and reject 
+them.
+Disturbances are inevitable.
+• Mobile robots operate in unpredictable environments:
+•
+Slippery floors, inclines, moving obstacles, wind (for drones)
+• These affect the plant (the physical system)
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+25
+
+--- PAGE 26 ---
+Dealing with Disturbances
+Noise corrupts the measurements.
+• Sensor readings are never perfect:
+•
+LiDAR returns noisy ranges
+•
+Encoders have resolution limits
+•
+IMUs drift over time
+• This affects the feedback in your control loop
+Without compensation, your control system will degrade.
+•
+You may follow the wrong path
+•
+Oscillations may arise
+•
+The system may become unstable
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+26
+
+--- PAGE 27 ---
+Motivation: Sources of Error and Uncertainty
+Assumption: Mobile robot using differential drive
+We can calculate movement using:
+•
+Dimensions of the robot
+•
+Information concerning engine
+•
+Control theory software
+Challenges: In most applications, the calculated position will not match the 
+actual position due to:
+•
+Slippage
+•
+Errors in production
+•
+Sensor resolution limitations
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+27
+
+--- PAGE 28 ---
+Motivation: Overcoming Uncertainty
+• How can we overcome errors?
+• Noisy data: Sensors provide imperfect data with noise.
+• Unknown errors: Certain errors are unpredictable and can't be modeled 
+deterministically.
+• Solution:
+• Use Statistical Inference to handle noise and errors.
+• Treat all measurements and states as random variables, allowing probabilistic 
+models to make better estimations.
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+28
+
+--- PAGE 29 ---
+Motivation: Need for Probabilistic Models
+• The Need for Probabilistic Methods:
+• Deterministic models are insufficient when dealing with real-world uncertainties.
+• Probabilistic methods allow for a more robust and adaptable approach to state 
+estimation and control.
+• Why Probabilistic Models?:
+• They allow robots to handle sensor inaccuracies, actuator uncertainties, and 
+unpredictable environments.
+• Example: A mobile robot navigating with noisy GPS or LiDAR data.
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+29
+
+--- PAGE 30 ---
+Motivation: Key Advantages of Probabilistic Approaches
+Improved Accuracy:
+By accounting for noise and errors, probabilistic methods offer more 
+accurate state estimations than deterministic methods. 
+Resilience to Uncertainty:
+Probabilistic models and algorithms help robots make better decisions 
+even in highly uncertain or dynamic environments.
+Examples in Practice:
+• Autonomous vehicles use probabilistic algorithms (e.g., Kalman Filters, 
+Particle Filters) for localization and obstacle detection.
+• Mobile robots use probabilistic models for mapping and navigation.
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+30
+
+--- PAGE 31 ---
+Motivation: Key Advantages of Probabilistic Approaches
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+31
+Aspect
+Deterministic
+Probabilistic
+Output
+Single value
+Probability distribution
+Noise handling
+Ignored or fixed
+Explicitly modeled
+Repeatability
+Always identical
+Can vary
+Realism
+Idealized
+Real-world aware
+Example
+𝑥 =  𝑓(𝑢) 
+𝑝𝑥𝑧, 𝑢)
+
+--- PAGE 32 ---
+Notation: State, Measurement, and Control
+• State at time t:
+𝑥𝑡=
+𝑥𝑡
+𝑦𝑡
+θ𝑡
+Position (𝑥𝑡,𝑦𝑡) and orientation (θ𝑡​) of the robot.
+• Measurement at time t:
+𝑧𝑡=
+𝑧1
+𝑧2
+…
+Sensor data (e.g., from cameras, LiDAR, GPS).
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+32
+
+--- PAGE 33 ---
+Notation: State, Measurement, and Control
+• Control at time t:
+𝑢𝑡=
+𝑣
+ω
+Example: 𝑣 : Linear velocity, ω: Angular velocity.
+• Time series:
+𝑥0:𝑡=
+𝑥0, 𝑥1, … , 𝑥𝑡
+Represents the trajectory of the robot over time.
+Attention: YOU have to design the robot state 𝑥𝑡. 
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+33
+
+--- PAGE 34 ---
+Notation: Random Variables and Probability Distributions
+Initial situation: Random Variable X
+Describes uncertain variables like sensor measurements or robot state.
+Example: 
+Coin flip X with x = ℎ𝑒𝑎𝑑, 𝑡𝑎𝑖𝑙 or robot's pose X with 𝑥𝑡= 𝑥𝑡, 𝑦𝑡, θ𝑡.
+Assumption: All random variables follow a probability density function
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+34
+
+--- PAGE 35 ---
+Notation: Random Variables and Probability Distributions
+Example: Coin flip X with x = ℎ𝑒𝑎𝑑, 𝑡𝑎𝑖𝑙
+Fair coin: 
+• Probability of "Heads" is p=0.5 (or 50%).
+• Probability of “Tail" is p=0.5 (or 50%).
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+35
+
+--- PAGE 36 ---
+Notation: Random Variables and Probability Distributions
+Example: Coin flip X with x = ℎ𝑒𝑎𝑑, 𝑡𝑎𝑖𝑙
+Fair coin: 
+• Probability of "Heads" is p=0.5 (or 50%).
+• Probability of “Tail" is p=0.5 (or 50%).
+• Biased coin:
+• Probability of "Heads" is p=0.7 (or 70%).
+• Probability of “Tail" is p=0.3 (or 30%).
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+36
+
+--- PAGE 37 ---
+Notation: Random Variables and Probability Distributions
+Example: Coin flip X with x = ℎ𝑒𝑎𝑑, 𝑡𝑎𝑖𝑙
+Fair coin: 
+• Probability of "Heads" is p=0.5 (or 50%).
+• Probability of “Tail" is p=0.5 (or 50%).
+• Biased coin:
+• Probability of "Heads" is p=0.7 (or 70%).
+• Probability of “Tail" is p=0.3 (or 30%).
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+37
+E(X) = p = 0.5
+Var(X) = p(1-p) = 0.25  
+→ 
+E(X) = p = 0.7
+Var(X) = p(1-p) = 0.21  
+→ 
+
+--- PAGE 38 ---
+Notation: Discrete & Continuous Probability Distributions
+Binomial Distribution: Used for discrete events like coin flips.
+• n = total number of trials
+• k = number of successes
+• p = probability of success on a single trial 
+(fair coin: 0.5, biased coin: 0.7)
+Example: n = 10
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+38
+
+--- PAGE 39 ---
+Notation: Discrete & Continuous Probability Distributions
+P(X = k)…probability of getting exactly k success in n trials
+𝑃𝑋= 3 =
+𝑛
+𝑘∗𝑝𝑘∗1 −𝑝𝑛−𝑘= 10
+3
+∗0,53 ∗1 −0,5 10−7 =
+=
+10!
+3! 10 −3 ! ∗0,53 ∗1 −0,5 10−7  = 11,7%
+Fair coin:
+• E(X) = n * p = 10 * 0,5 = 5
+• Var(X) = n * p * (1 – p) = 10 * 0,5 * (1 – 0.5) = 2.5
+Biased coin:
+• E(X) = n * p = 10 * 0,7 = 7
+• Var(X) = n * p * (1 – p) = 10 * 0,7 * (1 – 0.7) = 2.1
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+39
+
+--- PAGE 40 ---
+Notation: Discrete & Continuous Probability Distributions
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+40
+
+--- PAGE 41 ---
+Notation: Discrete & Continuous Probability Distributions
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+41
+
+--- PAGE 42 ---
+Notation: Discrete & Continuous Probability Distributions
+Gaussian Distribution: Describes continuous values with mean μ and 
+variance 𝜎2.
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+42
+
+--- PAGE 43 ---
+Notation: Conditional Probability and Gaussian Variables
+Using Random Variables for State Description:
+• In probabilistic robotics, the state of the robot is modeled as a random 
+variable:
+ 
+ 
+ 
+ 
+ 
+𝑃𝑋= Ԧ𝑥≔𝑝( Ԧ𝑥)
+• This expresses the probability distribution over the possible states Ԧ𝑥, 
+considering the uncertainty in the robot's knowledge.
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+43
+
+--- PAGE 44 ---
+Notation: Conditional Probability and Gaussian Variables
+Conditional Probability:
+• The probability of an event A occurring given that another event B is true: 
+𝑃𝐴 | 𝐵= 𝑃𝐵 | 𝐴 ∗ 𝑃(𝐴)
+𝑃(𝐵)
+• 𝑃𝐴 | 𝐵: Probability of A given B (posterior)
+• 𝑃𝐵 | 𝐴: Likelihood of B given A
+• 𝑃𝐴: Probability of A given B (posterior)
+• 𝑃𝐵: Normalizing constant (total probability of B)
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+44
+
+--- PAGE 45 ---
+The Monty Hall Problem
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+45
+
+--- PAGE 46 ---
+The Monty Hall Problem
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+46
+
+--- PAGE 47 ---
+The Monty Hall Problem
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+47
+•
+Winning probability after initial selection: 1/3
+•
+The probability of winning always sum up to 1
+•
+Example: we are choosing door 2 
+
+--- PAGE 48 ---
+The Monty Hall Problem
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+48
+•
+One false door (with a goat) gets eliminated/opened.
+•
+Should we change?
+•
+What is the probability to win when we change?
+
+--- PAGE 49 ---
+The Monty Hall Problem
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+49
+
+--- PAGE 50 ---
+The Monty Hall Problem
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+50
+Door 3 is being opened!
+
+--- PAGE 51 ---
+The Monty Hall Problem
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+51
+
+--- PAGE 52 ---
+The Monty Hall Problem
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+52
+
+--- PAGE 53 ---
+The Monty Hall Problem
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+53
+
+--- PAGE 54 ---
+The Monty Hall Problem
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+54
+→ Switching the door changes the probability of winning from 1/3 to 2/3.
+
+--- PAGE 55 ---
+Notation: Conditional Probability and Gaussian Variables
+Normalization:
+The constants α and η are used to ensure that probabilities sum to 1:
+ 
+ 
+𝑃𝐴 | 𝐵= α ∗𝑃𝐵 | 𝐴 ∗ 𝑃𝐴or 𝑃𝐴 | 𝐵= η ∗𝑃𝐵 | 𝐴 ∗ 𝑃𝐴
+Combination of evidences:
+𝑝𝑎 | 𝑏, 𝑐= 𝑝𝑏 | 𝑎 , 𝑐 ∗𝑝𝑎 𝑐)
+𝑝𝑏 𝑐)
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+55
+
+--- PAGE 56 ---
+Notation: Conditional Probability and Gaussian Variables
+Gaussian (Normal) Distribution:
+The Gaussian distribution is commonly used to represent uncertainty in 
+continuous states, especially for sensor noise or motion models: 
+ 
+ 
+ 
+ 
+ 
+ 
+𝑝𝑥= 𝒩Ԧ𝑥 𝜇, Σ)
+• 𝜇… mean vector (expected state)
+• Σ … Covariance matrix (spread of the distribution)
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+56
+
+--- PAGE 57 ---
+Notation: Conditional Probability and Gaussian Variables
+Joint Probability of Two Variables:
+The probability of two random variables A and B occurring together: 
+ 
+ 
+ 
+ 
+ 
+ 
+𝑃𝐴, 𝐵= 𝑃𝐴 ∧ 𝐵
+This is useful in multi-sensor fusion, where different sensor measurements 
+are combined probabilistically.
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+57
+
+--- PAGE 58 ---
+Basic Math: Reasoning Over Time
+Bayes rule for mobile robots
+𝑝𝑥𝑡 | 𝑧𝑡 , 𝑢𝑡= 𝑝𝑧𝑡 | 𝑥𝑡 ∗𝑝𝑥𝑡 | 𝑢𝑡
+𝑝𝑧𝑡
+Where is the robot? 
+Localization: The primary goal is to estimate the robot's current pose 𝑥𝑡 ​. 
+→This is the core problem of robot localization.
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+58
+
+--- PAGE 59 ---
+Basic Math: Reasoning Over Time
+Basis for the estimation: Motion commands and kinematics:
+• The robot's motion is driven by a series of control inputs 𝑢𝑡 ​, which 
+describe how the robot moves over time.
+• The motion model predicts how the robot's position changes as it 
+executes these commands.
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+59
+
+--- PAGE 60 ---
+Basic Math: Reasoning Over Time
+Overcoming errors: Using additional sensor measurements:
+• To refine the estimate and account for errors (e.g., actuator noise or 
+slippage), we rely on sensor measurements 𝑧𝑡 ​, such as readings from GPS, 
+LiDAR, or cameras.
+• These measurements help reduce uncertainty and provide more accurate 
+localization
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+60
+
+--- PAGE 61 ---
+Basic Math: Reasoning Over Time
+Mathematically speaking:
+• The term 𝑝𝑥𝑡 | 𝑧0:𝑡 , 𝑢0:𝑡represents the Bayesian update for the robot's 
+pose.
+• It combines motion information 𝑢0:𝑡(from the control commands) and 
+sensor measurements 𝑧0:𝑡​ to update the robot's belief about its position 
+over time.
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+61
+
+--- PAGE 62 ---
+Basic Math: Reasoning Over Time
+Conditional probabilities:
+• These are conditional probabilities that model how likely a specific robot 
+pose is, given the past motion and current sensor data.
+• For example, how likely is the robot to be in a certain location after 
+executing a series of motions and making sensor observations?
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+62
+
+--- PAGE 63 ---
+Basic Math: Reasoning Over Time
+Using Bayes’ rule to answer the localization question:
+Bayes’ rule is applied to compute the best estimate of the robot's pose, 
+combining all previous motion information and the latest sensor data. 
+→This enables robots to localize themselves accurately over time, even in 
+uncertain environments.
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+63
+
+--- PAGE 64 ---
+Basic Math: Bayesian Inference
+• Initial point: Bayes’ theorem
+• Then we can inference using measurements
+• Example: A door sensor
+• We did n measurements using a “door sensor”: p 𝑠𝑒𝑛𝑠𝑜𝑟= 𝑇 | 𝑑𝑜𝑜𝑟= 𝑇 
+• We know p 𝑠𝑒𝑛𝑠𝑜𝑟= 𝑇 and p 𝑑𝑜𝑜𝑟= 𝑇
+• p 𝑠= p 𝑠𝑒𝑛𝑠𝑜𝑟= 𝑇𝑟𝑢𝑒 and p ¬𝑠= p 𝑠𝑒𝑛𝑠𝑜𝑟= 𝐹𝑎𝑙𝑠𝑒 
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+64
+𝑃𝐴 | 𝐵= 𝑃𝐵 | 𝐴 ∗ 𝑃(𝐴)
+𝑃(𝐵)
+
+--- PAGE 65 ---
+Basic Math: Bayesian Inference
+We can calculate 𝑝𝑑= 𝑇 | 𝑠= 𝑇:
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+65
+𝑝𝑑 | 𝑠= 𝑝𝑠 | 𝑑∗𝑝𝑑
+𝑝𝑠
+=
+𝑝𝑠 | 𝑑∗𝑝𝑑
+σ𝑑′ 𝑝𝑠 |𝑑′ 𝑝𝑑′ =
+=
+𝑝𝑠 | 𝑑∗𝑝𝑑
+𝑝𝑠 | 𝑑∗𝑝𝑑+ 𝑝𝑠 | ¬𝑑∗𝑝¬𝑑
+
+--- PAGE 66 ---
+Basic Math: Bayesian Inference
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+66
+
+--- PAGE 67 ---
+Basic Math: Bayesian Inference
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+67
+
+--- PAGE 68 ---
+Basic Math: Bayesian Inference and Conditional Independence
+We can now use Bayesian inference for:
+• Reasoning over time: 𝑝𝑥𝑡 | 𝑦𝑡=0 , … , 𝑦𝑡=𝑛
+• Using conditional independence to simplify equations
+• Using the Markov assumption
+We can simplify using independent random variables.
+Thus, we can ”ignore” variables in equations, variable c carries no 
+information if b is known:
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+68
+𝑝𝑎 | 𝑏, 𝑐= 𝑝𝑎 | 𝑏
+𝑝𝑎 , 𝑏 | 𝑐= 𝑝𝑎 | 𝑐* 𝑝𝑏 | 𝑐
+
+--- PAGE 69 ---
+Basic Math: Multivariate Gaussian Distribution
+• We must describe random variables
+• Simplest approach: Gaussian distribution
+• Unimodal distribution: One ”peak” 
+• Moments of distribution: Ԧ𝜇, Σ
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+69
+
+--- PAGE 70 ---
+Probabilistic Robotics: Basics
+• We cannot calculate movement (error, noise)
+• But we can
+• describe error (e.g.: using gaussian noise)
+• merge information (e.g.: sensor signals)
+• use external knowledge (e.g.: landmarks)
+• Content: Merge information
+• Probabilistic robotics (see (Thrun, 2006))
+• Machine Learning (see (Bishop,2006), (Hastie et al., 2009))
+• AI (see (Russel, 2004), (Cawsey, 1997))
+• Statistical reasoning (see (Perl, 1988))
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+70
+
+--- PAGE 71 ---
+Probabilistic Robotics: Basics
+• Merge all information: 𝑝𝑥𝑡 | 𝑥0:𝑡, 𝑧0:𝑡 , 𝑢0:𝑡
+• Question: How can we calculate that? Simplifications? 
+• Physical approach: Effect of 𝑥𝑡−1 on 𝑥𝑡 ?
+• Statistical description of 𝑥𝑡−1 
+• Movement command 𝑢0:𝑡
+• We can simplify following term using conditional independence and 
+Markov assumption
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+71
+
+--- PAGE 72 ---
+Basic Math: Markov Assumption
+• We want to do localization.
+• We assume a ”complete state”.
+• We can estimate 𝑥𝑡 using Ԧ𝑥𝑡−1(not Ԧ𝑥0:𝑡−1)
+• Ԧ𝑥𝑡−1 is then complete
+• Note, violations leads to faulty calculations
+• E.g. robot behavior depends on time due to battery state
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+72
+
+--- PAGE 73 ---
+Probabilistic Robotics: Basics
+• We use the Markov assumption, conditional independence and Bayes rule:
+• In the last step, we ”add an Ԧ𝑥𝑡−1 using integrals”. 
+• This looks complicated, let us analyse the solution step-by-step
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+73
+
+--- PAGE 74 ---
+Probabilistic Robotics: Basics
+The motion model
+• An estimation of the recent state using the last state 
+• We must use a kinematic model here 
+• Based on the last state and a motion command we get a new state
+• An estimation for the previous step (Note, it is a recursive approach):
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+74
+
+--- PAGE 75 ---
+Probabilistic Robotics: Basics
+The sensor model
+• This evaluates the recent state 
+• We use a prediction for this evaluation 
+However, we need to get a pseudo measurement 
+• We use the motion model and motion commands to calculate the robots 
+new pose 
+• This is known as the ”prediction” 
+• Using the sensor model, we ”correct” the prediction 
+• The result is known as the ”correction”
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+75
+
+--- PAGE 76 ---
+Probabilistic Robotics: Basics
+The Bayes Filter
+This results in a two-step approach 
+• Step 1: Prediction 
+• We rely on the previous state 
+• The robot is ”moved” using the kinematic model and the command 
+• We solve the integral, we get the prediction 
+The prediction (the conditional probability) is shortened to 𝑏𝑒𝑙( Ԧ𝑥𝑡)
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+76
+
+--- PAGE 77 ---
+Probabilistic Robotics: Basics
+The Bayes Filter
+• Step 1: Prediction 
+• Step 2: Correction 
+• Evaluation of prediction 
+• Correction of prediction using a measurement 
+• The correction (the conditional probability) is shortened using 𝑏𝑒𝑙( Ԧ𝑥𝑡)
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+77
+
+--- PAGE 78 ---
+Probabilistic Robotics: Basics
+• Merging 𝑝𝑥𝑡 | 𝑥𝑡−1, 𝑢𝑡and 𝑝𝑧𝑡 | 𝑥𝑡
+• Two-stage algorithm: Movement prediction and correction
+• Approach:
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+78
+
+--- PAGE 79 ---
+Next Steps
+• Kalman Filter:
+• Estimating states in linear Gaussian systems.
+• Predict and update steps for state estimation.
+• Extended Kalman Filter (EKF):
+• Handling non-linear systems with Taylor approximation.
+• EKF for localization and sensor fusion.
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+79
+
+--- PAGE 80 ---
+Next Steps
+• Particle Filter 
+• Monte Carlo methods for non-Gaussian, non-linear systems
+• Particle-based state estimation and resampling
+• Motion and Sensor Models
+• How robots model their movement with uncertainty
+• Sensor models: interpreting data from noisy sensors (e.g., LiDAR, cameras)
+Probabilistic Robotics| Lucas Muster | 08.04.2026
+80
+
+--- PAGE 81 ---
+Probabilistic Robotics
+Basic Introduction
+Questions?
+

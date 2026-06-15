@@ -1,0 +1,56 @@
+# filter_params.yaml
+# Default parameters shared by KF, EKF, and Particle Filter nodes.
+#
+# State (all filters): x = [x, y, theta]   — unicycle 3-DOF
+#   x, y   : 2D position [m]
+#   theta  : heading [rad]
+#
+# Control inputs (from IMU simulator):
+#   v     : forward speed  [m/s]   — constant, set via initial_vx
+#   omega : angular rate   [rad/s] — read from IMU angular_velocity.z each step
+#
+# Noise convention:
+#   Q (process noise)     — covariance added each prediction step
+#   R (measurement noise) — covariance of landmark range + bearing
+
+/**:
+  ros__parameters:
+
+    # ── Process noise Q (diagonal of 3×3 matrix) ───────────────────────────
+    # Tuned for 50 Hz IMU on figure8 trajectory.
+    q_xy:    0.001    # position noise  [m²/step]
+    q_theta: 0.0005   # heading noise   [rad²/step]
+
+    # ── Landmark measurement noise R ───────────────────────────────────────
+    r_landmark: 0.005  # range noise   [m²]    σ ≈ 0.07 m
+    r_bearing:  0.01   # bearing noise [rad²]  σ ≈ 0.10 rad
+
+    # ── Landmark definition (user-defined) ─────────────────────────────────
+    # A single cylinder placed above the figure8 trajectory.
+    # The robot detects this landmark when the true distance < landmark_radius.
+    landmark_x:      0.5   # world x  [m]
+    landmark_y:     -1.2   # world y  [m]
+    landmark_radius: 1.5   # detection radius [m]
+
+    # ── Time-delayed measurements experiment ────────────────────────────────
+    # Increase to simulate a delayed sensor pipeline.
+    # Experiments: 0 ms (baseline), 100 ms, 500 ms.
+    measurement_delay_ms: 0.0   # [ms]
+
+    # ── Initial robot state ─────────────────────────────────────────────────
+    # Must match imu_simulator initial pose.
+    initial_x:      0.0       # [m]
+    initial_y:     -2.7       # [m]
+    initial_theta: -1.5708    # [rad]  = -π/2  (pointing in -y direction)
+    initial_vx:     0.3       # [m/s]  forward speed (must match linear_vel)
+
+    # ── CSV logging ─────────────────────────────────────────────────────────
+    log_csv: false   # set true in experiment.launch.py
+
+
+# ── Particle Filter specific parameters ──────────────────────────────────────
+particle_filter_node:
+  ros__parameters:
+    num_particles: 500      # number of particles M
+    sigma_v:       0.03     # motion noise σ on v     [m/s]  — slides "05 PRO PF" slide 20
+    sigma_omega:   0.015    # motion noise σ on omega [rad/s]

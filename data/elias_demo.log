@@ -1,0 +1,24 @@
+[INFO] [launch]: All log files can be found below /root/.ros/log/2026-06-14-08-33-05-366441-DESKTOP-T4E25U4-36
+[INFO] [launch]: Default logging verbosity is set to INFO
+[INFO] [imu_simulator.py-1]: process started with pid [37]
+[INFO] [map_publisher_node-2]: process started with pid [39]
+[INFO] [kf_elias_node-3]: process started with pid [41]
+[INFO] [ekf_elias_node-4]: process started with pid [43]
+[INFO] [pf_elias_node-5]: process started with pid [45]
+[INFO] [rviz2-6]: process started with pid [47]
+[kf_elias_node-3] [INFO] [1781425985.501986293] [kf_elias_node]: KF (Elias 6D-CV) ready | v=0.12 lm=(1.80,3.00) r=6.00
+[map_publisher_node-2] [INFO] [1781425985.504330849] [map_publisher]: map_publisher: /map 112x103 @ 0.050 m/px
+[pf_elias_node-5] [INFO] [1781425985.521521598] [pf_elias_node]: PF (Elias MCL) ready | N=500 v=0.12 lm=(1.80,3.00)
+[rviz2-6] QStandardPaths: XDG_RUNTIME_DIR not set, defaulting to '/tmp/runtime-root'
+[ekf_elias_node-4] [INFO] [1781425985.593643493] [ekf_elias_node]: EKF (Elias unicycle) ready | v=0.12 lm=(1.80,3.00) r=6.00
+[rviz2-6] [INFO] [1781425985.893515880] [rviz2]: Stereo is NOT SUPPORTED
+[rviz2-6] [INFO] [1781425985.894024345] [rviz2]: OpenGl version: 4.5 (GLSL 4.5)
+[rviz2-6] [INFO] [1781425986.026419487] [rviz2]: Stereo is NOT SUPPORTED
+[imu_simulator.py-1] [0m[INFO] [1781425986.071670575] [imu_simulator]: Waypoint path built: 321 samples, length 6.26 m[0m
+[imu_simulator.py-1] [0m[INFO] [1781425986.111326525] [imu_simulator]: Map loaded: 112×103 @ 0.05m/px  (706 occupied cells)[0m
+[imu_simulator.py-1] [0m[INFO] [1781425986.112691353] [imu_simulator]: IMU simulator started: trajectory=waypoints  duration=0.0s  rate=50Hz  v=0.12m/s  ω=0.50rad/s[0m
+[rviz2-6] [INFO] [1781425987.505377167] [rviz2]: Trying to create a map of size 112 x 103 using 1 swatches
+[rviz2-6] [ERROR] [1781425987.533398485] [rviz2]: Vertex Program:rviz/glsl120/indexed_8bit_image.vert Fragment Program:rviz/glsl120/indexed_8bit_image.frag GLSL link result : 
+[rviz2-6] active samplers with a different type refer to the same texture image unit
+[imu_simulator.py-1] [0m[INFO] [1781426039.303073383] [imu_simulator]: Waypoint path complete — shutting down.[0m
+[INFO] [imu_simulator.py-1]: process has finished cleanly [pid 37]
