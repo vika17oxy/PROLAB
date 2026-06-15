@@ -20,6 +20,16 @@ data/**/*_log.csv
 *.toc
 ProbRob_Paper_Template_Englisch/*.log
 
+# Debug logs
+*.log
+
+# Course material & working text extracts (not part of the submission)
+all_pdfs_text.txt
+intro_text.txt
+04 PRO*.pdf
+05 PRO*.pdf
+PRO *.pdf
+
 # OS cruft
 .DS_Store
 Thumbs.db
