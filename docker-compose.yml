@@ -35,7 +35,7 @@ services:
   # ── Time-delay comparison in RViz (same speed 0.6 m/s, only delay differs) ──
   #   docker compose up delay0     # baseline   — estimates sit on the robot
   #   docker compose up delay100   # 100 ms     — estimates lag slightly
-  #   docker compose up delay500   # 500 ms     — estimates clearly trail the robot
+  #   docker compose up delay5s    # 5 s        — estimates lag ~3 m behind the robot
   delay0:
     <<: *gui
     command: >
@@ -56,7 +56,7 @@ services:
       landmark_x:=1.8 landmark_y:=3.0 landmark_radius:=6.0
       delay_ms:=100.0 use_rviz:=true
 
-  delay500:
+  delay5s:
     <<: *gui
     command: >
       ros2 launch prol_filters simulation.launch.py
@@ -64,7 +64,7 @@ services:
       initial_x:=-0.3 initial_y:=-0.5 initial_theta:=0.896
       linear_vel:=0.6
       landmark_x:=1.8 landmark_y:=3.0 landmark_radius:=6.0
-      delay_ms:=500.0 use_rviz:=true
+      delay_ms:=5000.0 use_rviz:=true
 
   # ── Headless logged run (no RViz) — writes kf_log/ekf_log/pf_log.csv to /data ─
   #   docker compose run --rm headless [extra launch args]

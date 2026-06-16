@@ -120,7 +120,7 @@ run one at a time and watch the estimates trail the true robot more as the delay
 ```bash
 docker compose up delay0      # baseline  — estimates sit on the robot
 docker compose up delay100    # 100 ms    — estimates lag slightly
-docker compose up delay500    # 500 ms    — estimates clearly trail the robot
+docker compose up delay5s     # 5 s       — estimates lag ~3 m behind the robot
 ```
 
 ### Headless logged run (produces the CSVs the plots use)
