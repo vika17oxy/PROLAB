@@ -115,6 +115,14 @@ Shows the robot driving the S-slalom with the KF/EKF/PF pose estimates, covarian
 ellipses, particle cloud, the landmark and the map. (Needs an X11 display — WSL 2 +
 WSLg on Windows, or a Linux desktop.)
 
+**See the time-delay effect in RViz** — same speed (0.6 m/s), only the delay differs;
+run one at a time and watch the estimates trail the true robot more as the delay grows:
+```bash
+docker compose up delay0      # baseline  — estimates sit on the robot
+docker compose up delay100    # 100 ms    — estimates lag slightly
+docker compose up delay500    # 500 ms    — estimates clearly trail the robot
+```
+
 ### Headless logged run (produces the CSVs the plots use)
 
 ```bash

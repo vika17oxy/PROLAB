@@ -1,25 +1,29 @@
+# Shared config for the RViz (GUI) services. Requires an X11 display
+# (WSL 2 + WSLg on Windows, or a Linux desktop).
+x-gui: &gui
+  build:
+    context: .
+    target: runtime
+  image: prol_filters:humble
+  network_mode: host
+  working_dir: /data
+  environment:
+    - ROS_DOMAIN_ID=0
+    - DISPLAY=${DISPLAY:-:0}
+    - LIBGL_ALWAYS_SOFTWARE=1
+    - MESA_GL_VERSION_OVERRIDE=3.3
+    - MESA_GLSL_VERSION_OVERRIDE=330
+    - QT_X11_NO_MITSHM=1
+  volumes:
+    - ./data:/data
+    - /tmp/.X11-unix:/tmp/.X11-unix:ro
+
 services:
 
-  # ── Interactive simulation with RViz (sim + 3 filters + map + RViz) ─────────
-  # One command:  docker compose up simulation
-  # Requires an X11 display (WSL2 + WSLg on Windows, or a Linux desktop).
+  # ── General interactive demo (S-slalom, no delay) ───────────────────────────
+  #   docker compose up simulation
   simulation:
-    build:
-      context: .
-      target: runtime
-    image: prol_filters:humble
-    network_mode: host
-    working_dir: /data
-    environment:
-      - ROS_DOMAIN_ID=0
-      - DISPLAY=${DISPLAY:-:0}
-      - LIBGL_ALWAYS_SOFTWARE=1
-      - MESA_GL_VERSION_OVERRIDE=3.3
-      - MESA_GLSL_VERSION_OVERRIDE=330
-      - QT_X11_NO_MITSHM=1
-    volumes:
-      - ./data:/data
-      - /tmp/.X11-unix:/tmp/.X11-unix:ro
+    <<: *gui
     command: >
       ros2 launch prol_filters simulation.launch.py
       trajectory:=waypoints
@@ -28,8 +32,42 @@ services:
       landmark_x:=1.8 landmark_y:=3.0 landmark_radius:=6.0
       use_rviz:=true
 
+  # ── Time-delay comparison in RViz (same speed 0.6 m/s, only delay differs) ──
+  #   docker compose up delay0     # baseline   — estimates sit on the robot
+  #   docker compose up delay100   # 100 ms     — estimates lag slightly
+  #   docker compose up delay500   # 500 ms     — estimates clearly trail the robot
+  delay0:
+    <<: *gui
+    command: >
+      ros2 launch prol_filters simulation.launch.py
+      trajectory:=waypoints
+      initial_x:=-0.3 initial_y:=-0.5 initial_theta:=0.896
+      linear_vel:=0.6
+      landmark_x:=1.8 landmark_y:=3.0 landmark_radius:=6.0
+      delay_ms:=0.0 use_rviz:=true
+
+  delay100:
+    <<: *gui
+    command: >
+      ros2 launch prol_filters simulation.launch.py
+      trajectory:=waypoints
+      initial_x:=-0.3 initial_y:=-0.5 initial_theta:=0.896
+      linear_vel:=0.6
+      landmark_x:=1.8 landmark_y:=3.0 landmark_radius:=6.0
+      delay_ms:=100.0 use_rviz:=true
+
+  delay500:
+    <<: *gui
+    command: >
+      ros2 launch prol_filters simulation.launch.py
+      trajectory:=waypoints
+      initial_x:=-0.3 initial_y:=-0.5 initial_theta:=0.896
+      linear_vel:=0.6
+      landmark_x:=1.8 landmark_y:=3.0 landmark_radius:=6.0
+      delay_ms:=500.0 use_rviz:=true
+
   # ── Headless logged run (no RViz) — writes kf_log/ekf_log/pf_log.csv to /data ─
-  # Override args, e.g.:  docker compose run --rm headless <launch args>
+  #   docker compose run --rm headless [extra launch args]
   headless:
     build:
       context: .
@@ -50,6 +88,7 @@ services:
       duration:=25.0 log_csv:=true use_rviz:=false
 
   # ── Metrics table + RMSE bar from the logged CSVs ───────────────────────────
+  #   docker compose run --rm evaluate
   evaluate:
     build:
       context: .
