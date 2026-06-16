@@ -62,5 +62,5 @@ COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
 
-# Default: launch all three filters
-CMD ["ros2", "launch", "prol_filters", "filters.launch.py"]
+# Default: simulator + all three filters + map (+ RViz if use_rviz:=true)
+CMD ["ros2", "launch", "prol_filters", "simulation.launch.py"]

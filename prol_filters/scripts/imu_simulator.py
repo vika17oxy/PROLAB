@@ -18,7 +18,7 @@ Trajectories:
               in an S / snake pattern, never returning to start)
 
 The node exits automatically after `duration` seconds.
-When used with experiment.launch.py (on_exit=Shutdown()), this terminates
+When used with simulation.launch.py (on_exit=Shutdown()), this terminates
 the whole ROS session so CSV logs are flushed.
 
 Parameters:

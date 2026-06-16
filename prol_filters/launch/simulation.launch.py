@@ -1,8 +1,9 @@
 """
-simulation.launch.py  —  Interactive simulation: IMU simulator + KF + EKF + PF + RViz2.
+simulation.launch.py  —  the single entry point: IMU simulator + KF + EKF + PF
++ map publisher (+ RViz2 when use_rviz:=true).
 
-Use this for live visualisation during development.
-For headless timed experiments (data collection), use experiment.launch.py.
+Live visualisation:        use_rviz:=true
+Headless data collection:  use_rviz:=false log_csv:=true duration:=<seconds>
 
 Usage:
   ros2 launch prol_filters simulation.launch.py

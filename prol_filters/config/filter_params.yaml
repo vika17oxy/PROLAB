@@ -45,7 +45,7 @@
     initial_vx:     0.3       # [m/s]  forward speed (must match linear_vel)
 
     # ── CSV logging ─────────────────────────────────────────────────────────
-    log_csv: false   # set true in experiment.launch.py
+    log_csv: false   # set true via simulation.launch.py log_csv:=true
 
 
 # ── Particle Filter specific parameters ──────────────────────────────────────
