@@ -85,16 +85,24 @@ def plot_filter_comparison(filt, out):
 
 
 def plot_trajectories(filt, out):
-    fig, ax = plt.subplots(figsize=(8.5, 7))
+    fig, ax = plt.subplots(figsize=(9, 6))
     gt = next(d for d in filt.values() if d is not None)
-    ax.plot(gt["gt_x"], gt["gt_y"], "-", color=C["GT"], lw=2.6,
+    ax.plot(gt["gt_x"], gt["gt_y"], "-", color=C["GT"], lw=3.0,
             label="Ground Truth", zorder=5)
+    # PF tracks tightest, so draw it on top (otherwise it hides under the GT);
+    # KF/EKF lighter/thinner underneath so the dense jitter doesn't dominate.
+    zmap = {"KF": 3, "EKF": 4, "PF": 7}
     for n, d in filt.items():
         if d is None:
             continue
-        ax.plot(d["x"], d["y"], "--", color=C[n], lw=1.4, alpha=0.9, label=n)
+        pf = (n == "PF"); e = perr(d)
+        ax.plot(d["x"], d["y"], "--", color=C[n], lw=1.6 if pf else 1.0,
+                alpha=0.95 if pf else 0.55, zorder=zmap.get(n, 3),
+                label=f"{n}  (RMSE {np.sqrt(np.mean(e ** 2)):.3f} m)")
+    ax.plot(gt["gt_x"][0], gt["gt_y"][0], "o", color="green", ms=9, label="Start", zorder=9)
+    ax.plot(gt["gt_x"][-1], gt["gt_y"][-1], "o", color="orange", ms=9, label="True End", zorder=9)
     ax.set_aspect("equal"); ax.set_xlabel("x [m]"); ax.set_ylabel("y [m]")
-    ax.set_title("Trajectory Comparison"); legend_out(ax, fontsize=11)
+    ax.set_title("Trajectory Comparison"); legend_out(ax, fontsize=10)
     fig.tight_layout(); fig.savefig(out); plt.close(fig); print("saved", out)
 
 
