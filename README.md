@@ -33,7 +33,9 @@ prol_filters/                       ROS 2 package
     ├── delay_experiment.py          time-delay RMSE sweep (0/100/500 ms)
     ├── delay_trajectories.py        delay trajectory comparison (3-panel)
     ├── qr_experiment.py             Q-variation + R-variation
-    ├── runtime_plot.py              per-update runtime comparison
+    ├── runtime_plot.py              per-update runtime (measured µs) + Big-O
+    ├── convergence.py               recovery from a wrong initial pose
+    ├── delay_breakdown.py           delay sweep -> each filter's breaking point
     └── kalman_gain_slalom.py        Kalman gain over time
 data/                                logged CSVs + generated plots (per experiment folder)
 Dockerfile, docker-compose.yml, entrypoint.sh
@@ -171,6 +173,8 @@ $EP /s/qr_experiment.py    --data /data                    # q_variation.png + r
 $EP /s/delay_experiment.py --data /data                    # delay_rmse_comparison.png
 $EP /s/delay_trajectories.py --out /data/10_scurve/plots/trajectories_delay_comparison.png
 $EP /s/plot_localization.py  --out /data/10_scurve/plots/ekf_localization.png
+$EP /s/delay_breakdown.py  --data /data   # RMSE-vs-delay sweep + breaking points
+$EP /s/convergence.py      --data /data   # recovery from a 1 m initial-pose error
 ```
 
 ---

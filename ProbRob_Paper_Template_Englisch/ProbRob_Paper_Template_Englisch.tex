@@ -260,6 +260,27 @@ real-time at 50\,Hz.
   \label{tab:rmse}
 \end{table}
 
+\subsection{Runtime and Complexity}
+
+Fig.~\ref{fig:runtime} reports the measured per-update wall-clock cost together
+with each filter's asymptotic complexity. The Gaussian filters cost
+$\approx5$--$7\,\mu$s per step: their work is dominated by the $d\times d$
+covariance products and the $m\times m$ gain inversion, i.e.\ $O(d^3)$ with state
+dimension $d{=}3$ and measurement dimension $m{=}2$. The PF touches all $M{=}500$
+particles in prediction, weighting and resampling, giving $O(M\,d)$ and a measured
+$\approx149\,\mu$s --- about $25\times$ the EKF --- yet still two orders of
+magnitude below the $20$\,ms budget at 50\,Hz.
+
+\begin{figure}[!h]
+  \centering
+  \includegraphics[width=0.98\columnwidth]{images/runtime_comparison.png}
+  \caption{Measured per-update runtime (mean bar with std whiskers, log scale;
+           right: per-tick distribution) annotated with the per-update asymptotic
+           complexity. $d$ = state dim (3), $m$ = measurement dim (2),
+           $M$ = particles (500).}
+  \label{fig:runtime}
+\end{figure}
+
 \subsection{EKF Localization Analysis}
 
 Fig.~\ref{fig:ekfloc} decomposes the localization process into three panels.
@@ -322,13 +343,30 @@ terms, since its tight estimate is the most penalised by the processing lag.
   \centering
   \includegraphics[width=0.98\textwidth]{images/delay_trajectories.png}
   \caption{EKF estimate on the S-slalom under increasing measurement-processing
-           delay (0, 100 and 500\,ms): Ground Truth (black), EKF estimate
+           delay (0, 100, 500 and 5000\,ms): Ground Truth (black), EKF estimate
            (green dashed) with 2$\sigma$ covariance ellipses, and the known
-           landmark (blue star). The annotated RMSE (averaged over 30 noise
-           realisations) grows monotonically with delay, as the lagged landmark
-           correction increasingly mismatches the robot's current pose.}
+           landmark (blue star). RMSE (averaged over 30 noise realisations) grows
+           with delay; at 5\,s the stale correction no longer matches the current
+           pose and the estimate diverges from the track (RMSE $\approx1.0$\,m).}
   \label{fig:delaytraj}
 \end{figure*}
+
+To locate each filter's tolerance limit we swept the delay from $0$ to
+$5000$\,ms (Fig.~\ref{fig:breakdown}). With a $0.5$\,m usability threshold the KF
+breaks almost immediately ($\approx250$\,ms), the EKF tolerates up to
+$\approx1250$\,ms, and the PF stays usable beyond $5$\,s --- its RMSE merely
+rises toward the open-loop dead-reckoning level rather than diverging. The
+breaking delay scales inversely with speed, since the spatial lag is
+$v\cdot\Delta t$.
+
+\begin{figure}[!h]
+  \centering
+  \includegraphics[width=0.98\columnwidth]{images/delay_breakdown.png}
+  \caption{Delay breakdown: position RMSE versus measurement delay (12-seed mean)
+           with each filter's breaking point (first delay with RMSE $>0.5$\,m).
+           Dotted lines mark the open-loop (dead-reckoning) RMSE per filter.}
+  \label{fig:breakdown}
+\end{figure}
 
 \subsection{Process-Noise (Q) and Measurement-Noise (R) Variation}
 
@@ -359,6 +397,27 @@ trade-off encoded by $Q$ and $R$.
   \caption{Measurement-noise ($R$) variation. Left: RMSE versus $r$ with the
            optimum marked. Right: EKF estimate for representative values.}
   \label{fig:r}
+\end{figure}
+
+\subsection{Convergence from a Wrong Initial Pose}
+
+To probe robustness we initialise each filter with a $1.0$\,m position error and
+measure how the error decays (Fig.~\ref{fig:conv}). All three recover below
+$0.5$\,m within $\approx0.02$\,s once the landmark is in view, but their
+long-term behaviour differs sharply: the PF settles at $\approx0.16$\,m and
+stays there, the EKF holds around $0.3$--$0.5$\,m, while the KF recovers briefly
+and then drifts back up to $\approx1$\,m. The $F{=}I$ approximation makes the KF
+over-confident after the first updates, so its gain becomes too small to track
+the bias-driven drift --- the same mechanism that gives it the worst RMSE
+overall.
+
+\begin{figure}[!h]
+  \centering
+  \includegraphics[width=0.98\columnwidth]{images/convergence.png}
+  \caption{Convergence from a $1.0$\,m initial-pose error (12-seed mean position
+           error over time). The PF recovers and stays low; the EKF holds; the KF
+           recovers then destabilises.}
+  \label{fig:conv}
 \end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

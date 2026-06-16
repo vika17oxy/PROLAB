@@ -29,7 +29,8 @@ V, DT = 0.4, 0.02       # v=0.4 makes the processing-lag visible (lag = v*delay)
 GYRO_NOISE = 0.012      # = node gyro_noise_std
 R_R, R_B = 0.005, 0.01  # = node r_landmark, r_bearing
 Q_XY, Q_TH = 0.001, 0.0005    # = node q_xy, q_theta
-DELAYS = [(0, "Baseline (0 ms delay)"), (100, "Delay 100 ms"), (500, "Delay 500 ms")]
+DELAYS = [(0, "Baseline (0 ms delay)"), (100, "Delay 100 ms"),
+          (500, "Delay 500 ms"), (5000, "Delay 5000 ms (5 s)")]
 
 
 def wrap(a): return math.atan2(math.sin(a), math.cos(a))
@@ -109,7 +110,7 @@ def main():
     a = ap.parse_args()
     gt, omega = make_truth(0)
     truths = [make_truth(s) for s in range(30)]            # vary gyro + meas noise
-    fig, axs = plt.subplots(1, 3, figsize=(16, 5.2), sharey=True)
+    fig, axs = plt.subplots(1, len(DELAYS), figsize=(4.6*len(DELAYS), 5.2), sharey=True)
     for ax, (dms, title) in zip(axs, DELAYS):
         D = int(round(dms/1000.0/DT))
         est, cov = run_ekf(gt, omega, D, seed=0)          # representative path
