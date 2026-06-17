@@ -26,7 +26,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
-C_KF  = 'tab:blue'    # Elias scheme: KF blue / EKF green / PF red
+C_KF  = 'tab:blue'    # KF blue / EKF green / PF red
 C_EKF = 'tab:green'
 C_PF  = 'tab:red'
 

@@ -14,7 +14,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.patches import Ellipse
 
-# Elias analyze_results.py plotting conventions.
+# Plotting conventions: filter colours, legend outside, clean rc.
 plt.rcParams.update({
     "axes.grid": True, "grid.color": "0.85", "grid.linewidth": 0.8,
     "axes.axisbelow": True, "axes.edgecolor": "0.4", "axes.linewidth": 1.0,

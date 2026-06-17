@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 """
 plot_comparison_gain.py — regenerate filter_comparison.png and kalman_gain.png
-in the plotting style of Elias Bitsch's PRO-LAB analyze_results.py (filter colour
-scheme, legend placed outside the axes, clean rc, landmark-update shading). This
-is an independent reimplementation of those conventions — own code — running on
-PROL_Vika's own KF/EKF/PF CSV logs.
+with a consistent plotting style (per-filter colour scheme, legend placed outside
+the axes, clean rc, landmark-update shading), from PROL_Vika's own KF/EKF/PF CSV
+logs.
 
 Usage:  python3 plot_comparison_gain.py --data-dir /data/10_scurve
 """
@@ -15,7 +14,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-# Elias-style filter colours (analyze_results.py COLOURS).
+# Filter colours: KF blue, EKF green, PF red, ground truth black.
 C = {"KF": "tab:blue", "EKF": "tab:green", "PF": "tab:red", "GT": "k"}
 
 plt.rcParams.update({
@@ -38,8 +37,8 @@ def load(p):
 
 
 def legend_out(ax, **kw):
-    # Place the legend outside the axes (upper-left of the right margin), as in
-    # Elias's _legend_right; savefig bbox='tight' keeps it in the file.
+    # Place the legend outside the axes (upper-left of the right margin);
+    # savefig bbox='tight' keeps it in the file.
     ax.legend(loc="upper left", bbox_to_anchor=(1.01, 1.0), borderaxespad=0.0,
               frameon=True, framealpha=0.92, **kw)
 

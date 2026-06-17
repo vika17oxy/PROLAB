@@ -33,7 +33,7 @@ Q_XY, Q_TH = 0.001, 0.0005    # = node q_xy, q_theta
 R_R, R_B = 0.005, 0.01  # = node r_landmark, r_bearing
 SIGMA_V, SIGMA_W, NP = 0.03, 0.015, 500
 EXPERIMENTS = [("01_baseline", 0), ("08_delay_100ms", 100), ("09_delay_500ms", 500)]
-C = {"KF": "tab:blue", "EKF": "tab:green", "PF": "tab:red"}  # Elias scheme
+C = {"KF": "tab:blue", "EKF": "tab:green", "PF": "tab:red"}  # KF blue / EKF green / PF red
 
 
 def wrap(a):

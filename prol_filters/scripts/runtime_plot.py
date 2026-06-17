@@ -6,7 +6,6 @@ PF nodes and produces runtime_comparison.png: mean per-update cost (bar, log
 scale, with std whiskers) + the per-tick distribution (box). Also prints the RMSE
 of each filter from the same run, for the sim<->plot alignment check.
 
-Elias analyze_results.py colour/legend conventions; own code.
 Usage:  python3 runtime_plot.py --data-dir /data/11_runtime
 """
 import argparse, os

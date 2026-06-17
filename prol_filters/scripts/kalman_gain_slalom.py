@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 """
-kalman_gain_slalom.py — Kalman gain over time on the *S-slalom route*, in Elias's
-plotting style, with the measurement->processing delay applied as in the node.
+kalman_gain_slalom.py — Kalman gain over time on the *S-slalom route*, with the
+measurement->processing delay applied as in the node.
 
 KF (F=I covariance) and EKF (full Jacobian), gain components K_x / K_y / K_theta
 for the range and bearing channels. The landmark sits off the path so it is seen
 only as the robot passes the two crests of the S -> clean detection windows
-(shaded), rather than a continuously-shaded plot. Own code; Elias colour/legend
-conventions.
+(shaded), rather than a continuously-shaded plot.
 
 Usage:  python3 kalman_gain_slalom.py --out <png> [--delay-ms 0|100|500]
 """

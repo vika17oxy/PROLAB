@@ -121,7 +121,7 @@ def simulate(delay_steps=0):
 
 
 def draw_ellipse(ax, mean, cov, nsig=2.0):
-    # 2σ covariance ellipse via eigendecomposition (Thrun/Elias style).
+    # 2σ covariance ellipse via eigendecomposition.
     vals, vecs = np.linalg.eigh(cov)
     vals = np.maximum(vals, 1e-12)
     order = vals.argsort()[::-1]; vals = vals[order]; vecs = vecs[:, order]

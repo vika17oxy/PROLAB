@@ -1,6 +1,6 @@
 /**
  * map_publisher_node.cpp — publishes PROL_Vika's map.yaml/.pgm as a latched
- * nav_msgs/OccupancyGrid on /map (the map backdrop, Elias-style). Minimal YAML
+ * nav_msgs/OccupancyGrid on /map (the map backdrop). Minimal YAML
  * + PGM (P5/P2) parsing, no external deps.
  */
 #include <rclcpp/rclcpp.hpp>
